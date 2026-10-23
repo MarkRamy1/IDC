@@ -216,6 +216,8 @@ const TRUSTED_COMPANIES = [
 let AppState = {
   mode: 'online', // 'online' | 'offline'
   onlineTab: 'public', // 'public' | 'private' | 'certificates' | 'validity'
+  isRegistered: false, // controlled by localStorage 'idc_is_registered'
+  isAppLocked: true,   // prompts fingerprint every time app is opened if registered
   offlineUnlocked: false,
   privateVaultUnlocked: false,
   offlineData: { ...DEFAULT_OFFLINE_DATA },
@@ -232,9 +234,13 @@ document.addEventListener('DOMContentLoaded', () => {
   renderAll();
   setupEventListeners();
   drawOfflineQrCode();
+  checkAppAccessState();
 });
 
 function loadStoredData() {
+  const isReg = localStorage.getItem('idc_is_registered');
+  AppState.isRegistered = (isReg === 'true');
+
   const savedOffline = localStorage.getItem('idc_offline_data');
   if (savedOffline) {
     try {
@@ -261,6 +267,112 @@ function saveOfflineData() {
 
 function saveCertsData() {
   localStorage.setItem('idc_certs_data', JSON.stringify(AppState.certificates));
+}
+
+// --- GATEKEEPER & ACCESS FLOW (تسجيل أولاً ثم قفل ببصمة الإصبع عند كل فتح) ---
+function checkAppAccessState() {
+  const onboarding = document.getElementById('onboardingScreen');
+  const lockGate = document.getElementById('appLockGate');
+  const appContainer = document.getElementById('appContainer');
+
+  if (!AppState.isRegistered) {
+    // الحالة 1: مستخدم جديد لأول مرة -> شاشة تسجيل البيانات أولاً
+    if (onboarding) onboarding.classList.remove('hidden');
+    if (lockGate) lockGate.classList.add('hidden');
+    if (appContainer) appContainer.classList.add('hidden');
+  } else if (AppState.isAppLocked) {
+    // الحالة 2: مستخدم مسجل مسبقاً -> شاشة القفل بالبصمة كل مرة يفتح التطبيق
+    if (onboarding) onboarding.classList.add('hidden');
+    if (lockGate) lockGate.classList.remove('hidden');
+    if (appContainer) appContainer.classList.add('hidden');
+  } else {
+    // الحالة 3: تم التحقق بالبصمة بنجاح -> فتح الأقسام الثلاثة
+    if (onboarding) onboarding.classList.add('hidden');
+    if (lockGate) lockGate.classList.add('hidden');
+    if (appContainer) appContainer.classList.remove('hidden');
+  }
+}
+
+// تسجيل هوية جديدة لأول مرة
+function handleRegistrationSubmit(event) {
+  if (event) event.preventDefault();
+
+  const name = document.getElementById('regFullName').value.trim();
+  const job = document.getElementById('regJobTitle').value.trim();
+  const nid = document.getElementById('regNationalId').value.trim();
+  const blood = document.getElementById('regBloodType').value;
+  const pin = document.getElementById('regPin').value.trim();
+  const phone = document.getElementById('regEmergencyPhone').value.trim();
+
+  if (name) AppState.offlineData.fullName = name;
+  if (job) AppState.offlineData.jobTitle = job;
+  if (nid) AppState.offlineData.nationalId = nid;
+  if (blood) AppState.offlineData.bloodType = blood;
+  if (pin) AppState.offlineData.offlinePin = pin;
+  if (phone) AppState.offlineData.emergencyContact1Phone = phone;
+  AppState.offlineData.lastUpdated = new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+  localStorage.setItem('idc_is_registered', 'true');
+  AppState.isRegistered = true;
+  AppState.isAppLocked = false;
+
+  saveOfflineData();
+  updateDataInViews();
+  drawOfflineQrCode();
+  checkAppAccessState();
+
+  sfx.playSuccess();
+  showToast('تم تسجيل هويتك الرقمية بنجاح! تم فتح الأقسام الثلاثة.');
+}
+
+// فتح التطبيق بالبصمة عند الفتح
+function unlockAppWithBiometric(method = 'fingerprint') {
+  sfx.init();
+
+  if (method === 'fingerprint') {
+    const btn = document.getElementById('gateFingerprintBtn');
+    if (btn) {
+      btn.style.transform = 'scale(0.92)';
+      btn.style.borderColor = '#10b981';
+      btn.style.boxShadow = '0 0 50px rgba(16, 185, 129, 0.7)';
+    }
+    sfx.playBeep();
+
+    setTimeout(() => {
+      if (btn) {
+        btn.style.transform = '';
+        btn.style.borderColor = '';
+        btn.style.boxShadow = '';
+      }
+      sfx.playSuccess();
+      AppState.isAppLocked = false;
+      checkAppAccessState();
+      showToast('تم تأكيد بصمة الإصبع وفتح المنظومة بنجاح!');
+    }, 700);
+  } else if (method === 'face') {
+    triggerFaceIdScan('app_gate');
+  } else if (method === 'pin') {
+    triggerPasswordPrompt('app_gate');
+  }
+}
+
+// زر قفل التطبيق من الهيدر
+function lockApplication() {
+  sfx.playBeep();
+  AppState.isAppLocked = true;
+  checkAppAccessState();
+  showToast('تم قفل المنظومة بنجاح');
+}
+
+// إعادة التسجيل وتجربة الشاشة الأولى من جديد
+function restartRegistration() {
+  if (confirm('هل ترغب في تسجيل هوية جديدة وإعادة إدخال البيانات من البداية؟')) {
+    localStorage.removeItem('idc_is_registered');
+    AppState.isRegistered = false;
+    AppState.isAppLocked = true;
+    checkAppAccessState();
+    showToast('تمت إعادة ضبط جلسة التسجيل');
+  }
 }
 
 // --- RENDER ENGINE ---
@@ -327,7 +439,7 @@ function renderModeStatus() {
   setAppMode(AppState.mode);
 }
 
-// --- ONLINE SUB-TABS ---
+// --- ONLINE SUB-TABS (الأقسام الثلاثة) ---
 function switchOnlineTab(tabKey) {
   sfx.playBeep();
   AppState.onlineTab = tabKey;
@@ -337,13 +449,17 @@ function switchOnlineTab(tabKey) {
     const btn = document.getElementById(`tabBtn-${t}`);
     const content = document.getElementById(`onlineTab-${t}`);
     if (t === tabKey) {
-      btn.className = 'flex-1 min-w-[120px] py-3 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-lg shadow-cyan-600/30';
-      content.classList.remove('hidden');
-      content.classList.add('flex');
+      if (btn) btn.className = 'flex-1 min-w-[120px] py-3 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-lg shadow-cyan-600/30';
+      if (content) {
+        content.classList.remove('hidden');
+        content.classList.add('flex');
+      }
     } else {
-      btn.className = 'flex-1 min-w-[120px] py-3 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all text-slate-300 hover:text-white hover:bg-slate-800/60';
-      content.classList.add('hidden');
-      content.classList.remove('flex');
+      if (btn) btn.className = 'flex-1 min-w-[120px] py-3 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all text-slate-300 hover:text-white hover:bg-slate-800/60';
+      if (content) {
+        content.classList.add('hidden');
+        content.classList.remove('flex');
+      }
     }
   });
 
@@ -358,11 +474,11 @@ function checkPrivateVaultState() {
   const unlockedContent = document.getElementById('vaultUnlockedContent');
 
   if (AppState.privateVaultUnlocked) {
-    lockScreen.classList.add('hidden');
-    unlockedContent.classList.remove('hidden');
+    if (lockScreen) lockScreen.classList.add('hidden');
+    if (unlockedContent) unlockedContent.classList.remove('hidden');
   } else {
-    lockScreen.classList.remove('hidden');
-    unlockedContent.classList.add('hidden');
+    if (lockScreen) lockScreen.classList.remove('hidden');
+    if (unlockedContent) unlockedContent.classList.add('hidden');
   }
 }
 
@@ -409,7 +525,11 @@ function triggerFaceIdScan(context = 'private_vault') {
 
     setTimeout(() => {
       closeModal('faceIdModal');
-      if (context === 'private_vault') {
+      if (context === 'app_gate') {
+        AppState.isAppLocked = false;
+        checkAppAccessState();
+        showToast('تم تأكيد بصمة الوجه وفتح المنظومة بنجاح!');
+      } else if (context === 'private_vault') {
         AppState.privateVaultUnlocked = true;
         checkPrivateVaultState();
       } else if (context === 'offline_vault') {
@@ -448,7 +568,11 @@ function triggerFingerprintAuth(context = 'private_vault') {
 
       setTimeout(() => {
         closeModal('fingerprintModal');
-        if (context === 'private_vault') {
+        if (context === 'app_gate') {
+          AppState.isAppLocked = false;
+          checkAppAccessState();
+          showToast('تم تأكيد البصمة وفتح المنظومة بنجاح!');
+        } else if (context === 'private_vault') {
           AppState.privateVaultUnlocked = true;
           checkPrivateVaultState();
         } else if (context === 'offline_vault') {
@@ -479,7 +603,11 @@ function triggerPasswordPrompt(context = 'private_vault') {
     if (val === '1234' || val === AppState.offlineData.offlinePin) {
       sfx.playSuccess();
       closeModal('passwordPromptModal');
-      if (context === 'private_vault') {
+      if (context === 'app_gate') {
+        AppState.isAppLocked = false;
+        checkAppAccessState();
+        showToast('تم تأكيد الرمز وفتح المنظومة بنجاح!');
+      } else if (context === 'private_vault') {
         AppState.privateVaultUnlocked = true;
         checkPrivateVaultState();
       } else if (context === 'offline_vault') {

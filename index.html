@@ -56,7 +56,7 @@
     <div class="fixed -bottom-24 -left-24 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
 
     <!-- MAIN APP BAR WITH MODE SWITCHER (Online vs Offline) -->
-    <header class="bg-[#001933]/90 border-b border-cyan-500/20 backdrop-blur-md sticky top-0 z-50 transition-all shadow-xl">
+    <header class="bg-[#001933]/90 border-b border-cyan-500/20 backdrop-blur-md sticky top-0 z-40 transition-all shadow-xl">
         <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
             
             <!-- Logo & Brand -->
@@ -73,7 +73,7 @@
                 </div>
             </div>
 
-            <!-- PRIMARY MODE SELECTOR PILL: ONLINE vs OFFLINE (Without any external badges) -->
+            <!-- PRIMARY MODE SELECTOR PILL: ONLINE vs OFFLINE -->
             <div class="flex items-center bg-[#00142b] p-1 rounded-2xl border border-white/10 shadow-inner">
                 <button id="modeBtnOnline" onclick="setAppMode('online')" class="switch-mode-btn active-online px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all">
                     <span class="material-symbols-outlined text-base">cloud_done</span>
@@ -87,10 +87,16 @@
 
             <!-- Fast Tools & Quick Action Controls -->
             <div class="flex items-center gap-2">
+                <!-- App Lock Button -->
+                <button onclick="lockApplication()" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1.5 transition-all" title="قفل المنظومة بالبصمة">
+                    <span class="material-symbols-outlined text-base">lock</span>
+                    <span class="hidden sm:inline">قفل المنظومة</span>
+                </button>
+
                 <!-- NFC Tap Simulator -->
                 <button onclick="triggerNfcTapSimulation()" class="px-3 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95">
                     <span class="material-symbols-outlined text-base animate-pulse">contactless</span>
-                    <span class="hidden sm:inline">لمس شريحة NFC</span>
+                    <span class="hidden sm:inline">لمس NFC</span>
                 </button>
 
                 <!-- Phone Mode Toggle -->
@@ -194,16 +200,8 @@
                     </div>
                 </div>
 
-                <!-- Quick Action Buttons Toolbar -->
+                <!-- Clean Actions Toolbar (Removed Direct Call & Encrypted Chat per user request) -->
                 <div class="mt-6 pt-5 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    <a href="tel:+201012345678" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 text-xs font-bold transition-all active:scale-95">
-                        <span class="material-symbols-outlined text-base">call</span>
-                        <span>اتصال مباشر</span>
-                    </a>
-                    <a href="https://wa.me/201012345678" target="_blank" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-teal-600/20 hover:bg-teal-600/30 border border-teal-500/30 text-teal-300 text-xs font-bold transition-all active:scale-95">
-                        <span class="material-symbols-outlined text-base">chat</span>
-                        <span>محادثة مشفرة</span>
-                    </a>
                     <button onclick="showToast('تم تحميل بطاقة الهوية الرقمية (vCard) بنجاح')" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/30 text-cyan-300 text-xs font-bold transition-all active:scale-95">
                         <span class="material-symbols-outlined text-base">save_alt</span>
                         <span>حفظ في الهاتف</span>
@@ -211,6 +209,14 @@
                     <button onclick="triggerNfcTapSimulation()" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-white/10 text-slate-200 text-xs font-bold transition-all active:scale-95">
                         <span class="material-symbols-outlined text-base">qr_code_2</span>
                         <span>مشاركة الهوية</span>
+                    </button>
+                    <button onclick="lockApplication()" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-bold transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-base">lock</span>
+                        <span>قفل المنظومة الآن</span>
+                    </button>
+                    <button onclick="openOfflineDataEditor()" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-teal-600/20 hover:bg-teal-600/30 border border-teal-500/30 text-teal-300 text-xs font-bold transition-all active:scale-95">
+                        <span class="material-symbols-outlined text-base">edit_note</span>
+                        <span>تعديل البيانات</span>
                     </button>
                 </div>
             </section>
@@ -221,7 +227,7 @@
             <!-- ========================================================================= -->
             <div id="sectionOnline" class="flex flex-col gap-6">
 
-                <!-- Online Partition Tabs Header -->
+                <!-- Online Partition Tabs Header (الأقسام الثلاثة الرئيسية) -->
                 <nav class="glass-panel rounded-2xl p-1.5 flex gap-1.5 overflow-x-auto shadow-lg border border-cyan-500/20">
                     <!-- Tab 1: Public -->
                     <button id="tabBtn-public" onclick="switchOnlineTab('public')" class="flex-1 min-w-[120px] py-3 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-lg shadow-cyan-600/30">
@@ -238,18 +244,18 @@
                     <!-- Tab 3: Active Certificates (With Individual Passwords) -->
                     <button id="tabBtn-certificates" onclick="switchOnlineTab('certificates')" class="flex-1 min-w-[140px] py-3 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all text-slate-300 hover:text-white hover:bg-slate-800/60">
                         <span class="material-symbols-outlined text-lg text-emerald-400">verified</span>
-                        <span>3. الوثائق السارية</span>
+                        <span>3. الوثائق والشهادات السارية</span>
                         <span class="text-[9px] bg-emerald-500/30 text-emerald-300 px-1.5 py-0.2 rounded font-bold">باسوورد لكل وثيقة</span>
                     </button>
 
-                    <!-- Tab 4: Trusted Companies & Entities -->
+                    <!-- Tab 4: Trusted Entities -->
                     <button id="tabBtn-validity" onclick="switchOnlineTab('validity')" class="flex-1 min-w-[140px] py-3 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all text-slate-300 hover:text-white hover:bg-slate-800/60">
                         <span class="material-symbols-outlined text-lg text-cyan-400">verified_user</span>
-                        <span>4. الجهات والشركات الموثوقة</span>
+                        <span>4. الجهات الموثوقة</span>
                     </button>
                 </nav>
 
-                <!-- SUB-TAB 1: PUBLIC INFORMATION (المعلومات العامة) -->
+                <!-- SUB-TAB 1: PUBLIC INFORMATION (1. الواجهة العامة) -->
                 <div id="onlineTab-public" class="flex flex-col gap-6">
 
                     <!-- Emergency Rapid Medical Strip -->
@@ -369,7 +375,7 @@
                     </div>
                 </div>
 
-                <!-- SUB-TAB 2: PRIVATE INFORMATION VAULT (الخزنة الخاصة المحمية) -->
+                <!-- SUB-TAB 2: PRIVATE INFORMATION VAULT (2. الخزنة الخاصة) -->
                 <div id="onlineTab-private" class="hidden flex-col gap-6">
 
                     <!-- STATE A: LOCKED VAULT GATE -->
@@ -496,7 +502,7 @@
                     </div>
                 </div>
 
-                <!-- SUB-TAB 3: ACTIVE CERTIFICATES (الوثائق السارية وباسوورد لكل وثيقة) -->
+                <!-- SUB-TAB 3: ACTIVE CERTIFICATES (3. الوثائق والشهادات السارية وباسوورد لكل وثيقة) -->
                 <div id="onlineTab-certificates" class="hidden flex-col gap-6">
                     <!-- Feature Explanation Banner -->
                     <div class="glass-card rounded-2xl p-5 border border-cyan-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -524,7 +530,7 @@
                     </div>
                 </div>
 
-                <!-- SUB-TAB 4: TRUSTED COMPANIES & ENTITIES (الجهات والشركات الموثوقة) -->
+                <!-- SUB-TAB 4: TRUSTED ENTITIES (4. الجهات والشركات الموثوقة) -->
                 <div id="onlineTab-validity" class="hidden flex-col gap-6">
                     <div class="glass-card rounded-2xl p-5 border border-emerald-500/30 flex items-center justify-between gap-4">
                         <div class="flex items-center gap-3">
@@ -551,7 +557,7 @@
             <!-- ========================================================================= -->
             <div id="sectionOffline" class="hidden flex-col gap-6">
 
-                <!-- Offline Master Card (Clean, NO My Orange badge) -->
+                <!-- Offline Master Card -->
                 <section class="orange-subtle-box rounded-3xl p-6 sm:p-8 relative overflow-hidden card-reflection shadow-2xl">
                     <div class="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 relative z-10">
                         <div class="flex items-center gap-4">
@@ -563,7 +569,7 @@
                                     <h2 class="text-xl sm:text-2xl font-black text-white">وضع عدم الاتصال (IDC Offline Mode)</h2>
                                 </div>
                                 <p class="text-xs text-orange-200 mt-1">
-                                    يعرض الأساسيات الحيوية، الهوية، وجهات الاتصال الفورية من الذاكرة المحلية للجهاز بدون الحاجة لأي إنترنت أو شبكة!
+                                    يعرض الأساسيات الحيوية، الهوية، وبيانات الطوارئ من الذاكرة المحلية للجهاز بدون الحاجة لأي إنترنت أو شبكة!
                                 </p>
                             </div>
                         </div>
@@ -578,7 +584,7 @@
                         </div>
                     </div>
 
-                    <!-- Fast SOS Call Grid -->
+                    <!-- Fast Emergency Call Grid (Zero internet required) -->
                     <div class="mt-6 pt-5 border-t border-orange-500/20 grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <a href="tel:123" class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-rose-600/30 hover:bg-rose-600/40 border border-rose-500/40 text-rose-200 text-xs font-extrabold transition-all active:scale-95">
                             <span class="material-symbols-outlined text-lg animate-bounce">e911_emergency</span>
@@ -720,6 +726,120 @@
 
 
     <!-- ========================================================================= -->
+    <!-- 1. INITIAL ONBOARDING / REGISTRATION SCREEN (شاشة التسجيل لأول مرة) -->
+    <!-- ========================================================================= -->
+    <div id="onboardingScreen" class="gate-screen-overlay hidden">
+        <div class="glass-panel rounded-3xl p-6 sm:p-10 max-w-lg w-full relative border border-cyan-400/40 shadow-2xl">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-cyan-600 to-teal-400 flex items-center justify-center text-slate-950 font-black mx-auto mb-3 shadow-xl shadow-cyan-500/30">
+                    <span class="material-symbols-outlined text-3xl font-bold">shield</span>
+                </div>
+                <h2 class="text-2xl font-black text-white">تسجيل وتأمين هويتك في IDC</h2>
+                <p class="text-xs text-cyan-300 mt-1">أدخل بياناتك الأساسية لأول مرة لتشفيرها وحفظها في المنظومة بأمان</p>
+            </div>
+
+            <form onsubmit="handleRegistrationSubmit(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="text-slate-300 block mb-1 font-semibold">الاسم بالكامل:</label>
+                    <input type="text" id="regFullName" required placeholder="مثال: أحمد إبراهيم المنشاوي" class="w-full py-2.5 px-3.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-cyan-400 text-sm">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-slate-300 block mb-1 font-semibold">المسمى المهني / الوظيفة:</label>
+                        <input type="text" id="regJobTitle" required placeholder="مهندس نظم / باحث / مستخدم" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-cyan-400">
+                    </div>
+                    <div>
+                        <label class="text-slate-300 block mb-1 font-semibold">الرقم القومي / رقم الهوية:</label>
+                        <input type="text" id="regNationalId" required placeholder="14 رقم" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-white/10 text-white font-mono focus:outline-none focus:border-cyan-400">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-slate-300 block mb-1 font-semibold">فصيلة الدم:</label>
+                        <select id="regBloodType" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-cyan-400">
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-slate-300 block mb-1 font-semibold">تعيين رمز PIN السري:</label>
+                        <input type="password" id="regPin" required maxlength="6" placeholder="مثال: 1234" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-white/10 text-white font-mono focus:outline-none focus:border-cyan-400">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-slate-300 block mb-1 font-semibold">رقم هاتف الطوارئ الأساسي:</label>
+                    <input type="tel" id="regEmergencyPhone" required placeholder="010XXXXXXXX" class="w-full py-2.5 px-3.5 rounded-xl bg-slate-900 border border-white/10 text-white font-mono focus:outline-none focus:border-cyan-400">
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-cyan-950/40 border border-cyan-500/20 flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <span class="material-symbols-outlined text-cyan-400 text-xl">fingerprint</span>
+                        <span class="text-slate-200">تفعيل الدخول ببصمة الإصبع و Face ID</span>
+                    </div>
+                    <input type="checkbox" id="regBiometricEnabled" checked class="w-4 h-4 accent-cyan-500 cursor-pointer">
+                </div>
+
+                <button type="submit" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-400 hover:brightness-110 text-slate-950 font-black text-sm shadow-xl shadow-cyan-500/25 transition-all active:scale-95 flex items-center justify-center gap-2 mt-4">
+                    <span class="material-symbols-outlined text-lg">lock</span>
+                    <span>إتمام التسجيل والدخول إلى الأقسام الثلاثة</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
+    <!-- 2. BIOMETRIC APP LOCK GATE (شاشة القفل التلقائي بالبصمة عند كل فتح) -->
+    <!-- ========================================================================= -->
+    <div id="appLockGate" class="gate-screen-overlay hidden">
+        <div class="glass-panel rounded-3xl p-8 sm:p-12 max-w-sm w-full flex flex-col items-center justify-center text-center relative border border-cyan-400/40 shadow-2xl">
+            <!-- Logo -->
+            <div class="w-16 h-16 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-4 shadow-lg shadow-cyan-500/20">
+                <span class="material-symbols-outlined text-3xl">shield</span>
+            </div>
+
+            <h3 class="text-xl font-black text-white">منظومة IDC مقفلة للأمان</h3>
+            <p class="text-xs text-slate-300 mt-1">مرحباً بك مجدداً <strong class="text-cyan-300 bind-full-name">أحمد إبراهيم</strong></p>
+            <span class="text-[11px] text-slate-400 font-mono mt-0.5">UID: IDC-SEC-2026-9942</span>
+
+            <!-- Fingerprint Sensor Touch Zone -->
+            <div class="my-8 flex flex-col items-center">
+                <div id="gateFingerprintBtn" onclick="unlockAppWithBiometric('fingerprint')" class="biometric-pulse-ring">
+                    <span class="material-symbols-outlined text-5xl text-cyan-300 select-none">fingerprint</span>
+                </div>
+                <p class="text-xs text-cyan-300 font-semibold mt-4 animate-pulse">المس بصمتك لفتح المنظومة</p>
+            </div>
+
+            <!-- Secondary Unlock Options: Face ID / PIN -->
+            <div class="grid grid-cols-2 gap-2 w-full pt-4 border-t border-white/10 text-xs">
+                <button onclick="unlockAppWithBiometric('face')" class="py-2.5 px-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/10 text-slate-200 font-semibold flex items-center justify-center gap-1.5 transition-all">
+                    <span class="material-symbols-outlined text-base text-cyan-400">face</span>
+                    <span>بصمة الوجه</span>
+                </button>
+                <button onclick="unlockAppWithBiometric('pin')" class="py-2.5 px-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/10 text-slate-200 font-semibold flex items-center justify-center gap-1.5 transition-all">
+                    <span class="material-symbols-outlined text-base text-amber-400">key</span>
+                    <span>رمز PIN</span>
+                </button>
+            </div>
+
+            <!-- Reset / Re-register Link -->
+            <button onclick="restartRegistration()" class="text-[11px] text-slate-400 hover:text-cyan-300 mt-5 transition-colors underline">
+                تسجيل هوية جديدة / إعادة ضبط البيانات
+            </button>
+        </div>
+    </div>
+
+
+    <!-- ========================================================================= -->
     <!-- INTERACTIVE MODALS & BIOMETRIC SUITE -->
     <!-- ========================================================================= -->
 
@@ -740,7 +860,7 @@
             </div>
 
             <h3 class="text-lg font-black text-white mt-2">التحقق البيومتري عبر بصمة الوجه</h3>
-            <p id="faceScanStatus" class="text-cyan-300 font-bold text-sm mt-1 animate-pulse">جاري استشعار ملامح الوجه 3D...</p>
+            <p id="faceScanStatus" class="text-cyan-300 font-bold text-sm mt-1 animate-pulse">جاري مسح بصمة الوجه 3D واستشعار العمق...</p>
 
             <div class="mt-6 flex items-center gap-2 text-[11px] text-slate-400">
                 <span class="material-symbols-outlined text-sm text-cyan-400">lock</span>
