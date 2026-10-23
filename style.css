@@ -1,0 +1,318 @@
+/* IDC Independent Data & Identity Vault - Core Styles */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+:root {
+  --bg-deep: #001224;
+  --bg-surface: #001e38;
+  --bg-card: rgba(0, 32, 64, 0.7);
+  --border-glass: rgba(6, 182, 212, 0.16);
+  --primary-cyan: #06b6d4;
+  --primary-teal: #14b8a6;
+  --accent-orange: #ff7700;
+  --accent-gold: #f59e0b;
+  --accent-emerald: #10b981;
+  --accent-rose: #f43f5e;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-deep);
+  color: #f1f5f9;
+  font-family: 'Cairo', 'Plus Jakarta Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(20, 184, 166, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(255, 119, 0, 0.03) 0%, transparent 60%);
+  background-attachment: fixed;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #001224;
+}
+::-webkit-scrollbar-thumb {
+  background: #0d9488;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #06b6d4;
+}
+
+/* Glass Panels */
+.glass-panel {
+  background: rgba(0, 28, 54, 0.78);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 12px 35px -8px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.06);
+}
+
+.glass-card {
+  background: rgba(2, 36, 70, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(6, 182, 212, 0.14);
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.4);
+}
+
+.glass-card:hover {
+  border-color: rgba(6, 182, 212, 0.35);
+}
+
+/* Orange Telecom Theme for Offline */
+.orange-theme-glow {
+  box-shadow: 0 0 25px rgba(255, 119, 0, 0.25);
+  border-color: rgba(255, 119, 0, 0.35) !important;
+}
+
+.orange-gradient {
+  background: linear-gradient(135deg, #ff7700 0%, #ff5500 50%, #d84315 100%);
+}
+
+.orange-subtle-box {
+  background: linear-gradient(145deg, rgba(255, 119, 0, 0.12), rgba(0, 28, 54, 0.7));
+  border: 1px solid rgba(255, 119, 0, 0.25);
+}
+
+/* Light / Card Reflections */
+.card-reflection {
+  position: relative;
+  overflow: hidden;
+}
+.card-reflection::after {
+  content: '';
+  position: absolute;
+  top: -60%;
+  left: -60%;
+  width: 220%;
+  height: 220%;
+  background: linear-gradient(
+    65deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.04) 45%,
+    rgba(255, 255, 255, 0.14) 50%,
+    rgba(255, 255, 255, 0.04) 55%,
+    transparent 70%
+  );
+  transform: rotate(-25deg);
+  pointer-events: none;
+  transition: transform 0.8s ease;
+}
+.card-reflection:hover::after {
+  transform: rotate(-25deg) translate(25%, 25%);
+}
+
+/* Animations */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(6, 182, 212, 0.35); }
+  50% { box-shadow: 0 0 35px rgba(6, 182, 212, 0.75); }
+}
+
+@keyframes nfcWave {
+  0% { transform: scale(0.85); opacity: 0.9; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes laserScan {
+  0% { top: 5%; opacity: 0.3; }
+  50% { top: 92%; opacity: 1; }
+  100% { top: 5%; opacity: 0.3; }
+}
+
+@keyframes faceScanMesh {
+  0% { transform: scale(0.98); opacity: 0.6; }
+  50% { transform: scale(1.04); opacity: 1; }
+  100% { transform: scale(0.98); opacity: 0.6; }
+}
+
+@keyframes floatGentle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+.anim-pulse-glow {
+  animation: pulseGlow 2.5s infinite;
+}
+
+.anim-float {
+  animation: floatGentle 3s ease-in-out infinite;
+}
+
+/* Face ID Scanner Styles */
+.face-scan-box {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  border-radius: 36px;
+  border: 2px dashed rgba(6, 182, 212, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, rgba(0, 20, 42, 0.7) 80%);
+  overflow: hidden;
+  box-shadow: 0 0 35px rgba(6, 182, 212, 0.3);
+}
+
+.face-laser {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent 0%, #06b6d4 50%, #22d3ee 80%, transparent 100%);
+  box-shadow: 0 0 12px #22d3ee, 0 0 24px #06b6d4;
+  animation: laserScan 2s ease-in-out infinite;
+  z-index: 10;
+}
+
+.face-grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-size: 20px 20px;
+  background-image: 
+    linear-gradient(to right, rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
+  animation: faceScanMesh 2.5s ease-in-out infinite;
+}
+
+/* Fingerprint Sensor */
+.fingerprint-touch-zone {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.2) 0%, rgba(0, 28, 54, 0.9) 80%);
+  border: 2px solid rgba(6, 182, 212, 0.5);
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.25);
+}
+
+.fingerprint-touch-zone:hover {
+  transform: scale(1.05);
+  border-color: #06b6d4;
+  box-shadow: 0 0 30px rgba(6, 182, 212, 0.5);
+}
+
+.fingerprint-touch-zone:active {
+  transform: scale(0.95);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, rgba(0, 28, 54, 0.9) 80%);
+  border-color: #10b981;
+}
+
+.fingerprint-touch-zone.orange-fp {
+  border-color: rgba(255, 119, 0, 0.5);
+  box-shadow: 0 0 20px rgba(255, 119, 0, 0.25);
+  background: radial-gradient(circle, rgba(255, 119, 0, 0.2) 0%, rgba(0, 28, 54, 0.9) 80%);
+}
+
+.fingerprint-touch-zone.orange-fp:hover {
+  border-color: #ff7700;
+  box-shadow: 0 0 30px rgba(255, 119, 0, 0.5);
+}
+
+.fingerprint-touch-zone.orange-fp:active {
+  background: radial-gradient(circle, rgba(255, 119, 0, 0.4) 0%, rgba(0, 28, 54, 0.9) 80%);
+}
+
+/* Phone Frame Mockup View */
+.phone-mode-wrapper {
+  max-width: 440px !important;
+  margin: 0 auto;
+  border-radius: 46px;
+  border: 8px solid #0f2742;
+  box-shadow: 0 25px 80px -15px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  background: #001224;
+}
+
+.phone-notch {
+  width: 140px;
+  height: 24px;
+  background: #0f2742;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Interactive Lock Badges */
+.cert-locked-badge {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.3));
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+}
+
+.cert-unlocked-badge {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.3));
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+}
+
+/* Keypad Grid for PIN */
+.numpad-key {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  background: rgba(0, 36, 70, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+.numpad-key:hover {
+  background: rgba(6, 182, 212, 0.2);
+  border-color: rgba(6, 182, 212, 0.4);
+  transform: translateY(-2px);
+}
+.numpad-key:active {
+  transform: scale(0.92);
+  background: rgba(6, 182, 212, 0.4);
+}
+
+.numpad-key.orange-key:hover {
+  background: rgba(255, 119, 0, 0.2);
+  border-color: rgba(255, 119, 0, 0.4);
+}
+.numpad-key.orange-key:active {
+  background: rgba(255, 119, 0, 0.4);
+}
+
+/* Toggle Switch */
+.switch-mode-btn {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.switch-mode-btn.active-online {
+  background: linear-gradient(135deg, #0d9488 0%, #06b6d4 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+}
+
+.switch-mode-btn.active-offline {
+  background: linear-gradient(135deg, #ff7700 0%, #ea580c 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(255, 119, 0, 0.4);
+}
