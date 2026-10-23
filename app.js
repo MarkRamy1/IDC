@@ -300,7 +300,133 @@ function checkAppAccessState() {
   }
 }
 
-// فتح نافذة التسجيل/الدخول باختيار (Password + NFC) أو (Password + QR)
+// --- EGYPT DIGITAL IDENTITY CARD HERO CONTROLLER (مطابق للديمو والصورة) ---
+AppState.egyptCardSubtab = 'card';
+AppState.isMaskedNumberRevealed = false;
+
+function switchEgyptCardTab(tabKey) {
+  sfx.playBeep();
+  AppState.egyptCardSubtab = tabKey;
+
+  const tabs = ['qr', 'card', 'wallet'];
+  tabs.forEach(t => {
+    const btn = document.getElementById(`egyptTabBtn-${t}`);
+    const view = document.getElementById(`egyptCardView-${t}`);
+    if (t === tabKey) {
+      if (btn) btn.classList.add('active-subtab');
+      if (view) view.classList.remove('hidden');
+    } else {
+      if (btn) btn.classList.remove('active-subtab');
+      if (view) view.classList.add('hidden');
+    }
+  });
+
+  if (tabKey === 'qr') {
+    drawEgyptHeroQr();
+  }
+}
+
+function drawEgyptHeroQr() {
+  const canvas = document.getElementById('egyptHeroQrCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const size = 160;
+  canvas.width = size;
+  canvas.height = size;
+
+  ctx.fillStyle = '#001e38';
+  ctx.fillRect(0, 0, size, size);
+
+  ctx.strokeStyle = '#10b981';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(4, 4, size - 8, size - 8);
+
+  ctx.fillStyle = '#34d399';
+  function drawFinder(x, y) {
+    ctx.fillRect(x, y, 36, 36);
+    ctx.fillStyle = '#001e38';
+    ctx.fillRect(x + 6, y + 6, 24, 24);
+    ctx.fillStyle = '#34d399';
+    ctx.fillRect(x + 12, y + 12, 12, 12);
+  }
+  drawFinder(12, 12);
+  drawFinder(size - 48, 12);
+  drawFinder(12, size - 48);
+
+  ctx.fillStyle = '#6ee7b7';
+  for (let r = 0; r < 12; r++) {
+    for (let c = 0; c < 12; c++) {
+      if ((r * 3 + c * 7 + (r ^ c)) % 3 === 0) {
+        ctx.fillRect(56 + c * 4, 56 + r * 4, 3, 3);
+      }
+    }
+  }
+
+  // Golden EG Center emblem
+  ctx.fillStyle = '#007a48';
+  ctx.beginPath();
+  ctx.arc(size / 2, size / 2, 15, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#f9d976';
+  ctx.font = 'bold 9px monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('EG', size / 2, size / 2);
+}
+
+function toggleMaskedCardNumber() {
+  sfx.playBeep();
+  AppState.isMaskedNumberRevealed = !AppState.isMaskedNumberRevealed;
+  const display = document.getElementById('maskedCardNumberDisplay');
+  const icon = document.getElementById('maskedNumberEyeIcon');
+  if (!display || !icon) return;
+
+  if (AppState.isMaskedNumberRevealed) {
+    const nid = AppState.offlineData.nationalId || '29509180104829';
+    display.innerText = `${nid.slice(0, 4)} ${nid.slice(4, 8)} ${nid.slice(8, 12)} ${nid.slice(12, 14)}00`;
+    display.classList.add('text-emerald-300');
+    display.classList.remove('text-cyan-200');
+    icon.innerText = 'visibility_off';
+    showToast('تم كشف رقم الهوية الوطنية الرقمية');
+  } else {
+    display.innerText = '5678 •••• •••• 2980';
+    display.classList.remove('text-emerald-300');
+    display.classList.add('text-cyan-200');
+    icon.innerText = 'visibility';
+    showToast('تم إخفاء وتشفير رقم الهوية');
+  }
+}
+
+// --- MULTI-STEP AUTH CONTROLLER (كونسبت الديمو الأول) ---
+let currentAuthStep = 1;
+
+function goToAuthStep(stepNum) {
+  sfx.playBeep();
+  currentAuthStep = stepNum;
+
+  const s1 = document.getElementById('authStep1');
+  const s2 = document.getElementById('authStep2');
+  const s3 = document.getElementById('authStep3');
+
+  if (s1) s1.classList.toggle('hidden', stepNum !== 1);
+  if (s2) s2.classList.toggle('hidden', stepNum !== 2);
+  if (s3) s3.classList.toggle('hidden', stepNum !== 3);
+
+  // Sync inputs across steps
+  const nameInput = document.getElementById('authFullName');
+  const nidInput = document.getElementById('authNationalId');
+  const jobInput = document.getElementById('authJobTitle');
+  if (nameInput && nameInput.value.trim()) AppState.offlineData.fullName = nameInput.value.trim();
+  if (nidInput && nidInput.value.trim()) AppState.offlineData.nationalId = nidInput.value.trim();
+  if (jobInput && jobInput.value.trim()) AppState.offlineData.jobTitle = jobInput.value.trim();
+
+  if (stepNum === 2) {
+    if (AppState.activeAuthMethod === 'qr') {
+      drawAuthQrPreview();
+    }
+  }
+}
+
 function openAuthModal(method = 'nfc') {
   sfx.playBeep();
   AppState.activeAuthMethod = method;
@@ -308,35 +434,44 @@ function openAuthModal(method = 'nfc') {
   AppState.qrScanned = false;
 
   const modal = document.getElementById('authRegisterModal');
-  const title = document.getElementById('authModalTitle');
-  const subtitle = document.getElementById('authModalSubtitle');
   const nfcSection = document.getElementById('authNfcSection');
   const qrSection = document.getElementById('authQrSection');
-  const submitBtnText = document.getElementById('authSubmitBtnText');
+  const btnNfc = document.getElementById('authBtnTabNfc');
+  const btnQr = document.getElementById('authBtnTabQr');
 
-  if (method === 'nfc') {
-    title.innerText = 'الدخول والتسجيل بواسطة (Password + NFC)';
-    subtitle.innerText = 'المس شريحة NFC المعتمدة وأدخل كلمة المرور لتأكيد الهوية المشفرة';
-    nfcSection.classList.remove('hidden');
-    qrSection.classList.add('hidden');
-    submitBtnText.innerText = 'تأكيد التسجيل والدخول عبر NFC';
-  } else {
-    title.innerText = 'الدخول والتسجيل بواسطة (Password + QR)';
-    subtitle.innerText = 'للمستخدمين بدون شريحة NFC: استخدم رمز QR الرقمي المعتمد وكلمة المرور';
-    nfcSection.classList.add('hidden');
-    qrSection.classList.remove('hidden');
-    submitBtnText.innerText = 'تأكيد التسجيل والدخول عبر QR';
-    drawAuthQrPreview();
+  if (btnNfc && btnQr) {
+    if (method === 'nfc') {
+      btnNfc.className = 'py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all text-white bg-cyan-600/30 border border-cyan-500/40';
+      btnQr.className = 'py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all text-slate-300 hover:text-white';
+    } else {
+      btnQr.className = 'py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all text-white bg-cyan-600/30 border border-cyan-500/40';
+      btnNfc.className = 'py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all text-slate-300 hover:text-white';
+    }
+  }
+
+  if (nfcSection && qrSection) {
+    if (method === 'nfc') {
+      nfcSection.classList.remove('hidden');
+      qrSection.classList.add('hidden');
+    } else {
+      nfcSection.classList.add('hidden');
+      qrSection.classList.remove('hidden');
+      drawAuthQrPreview();
+    }
   }
 
   // Pre-fill existing data if available
   const d = AppState.offlineData;
-  document.getElementById('authFullName').value = d.fullName || '';
-  document.getElementById('authJobTitle').value = d.jobTitle || '';
-  document.getElementById('authNationalId').value = d.nationalId || '';
-  document.getElementById('authBloodType').value = d.bloodType || 'O+';
-  document.getElementById('authPassword').value = d.offlinePin || '';
+  const nameEl = document.getElementById('authFullName');
+  const jobEl = document.getElementById('authJobTitle');
+  const nidEl = document.getElementById('authNationalId');
+  const passEl = document.getElementById('authPassword');
+  if (nameEl) nameEl.value = d.fullName || '';
+  if (jobEl) jobEl.value = d.jobTitle || '';
+  if (nidEl) nidEl.value = d.nationalId || '';
+  if (passEl) passEl.value = d.offlinePin || '1234';
 
+  goToAuthStep(1);
   modal.classList.remove('hidden');
   modal.classList.add('flex');
 }
@@ -346,13 +481,15 @@ function simulateAuthNfcScan() {
   sfx.playBeep();
   const status = document.getElementById('authNfcStatusTxt');
   const icon = document.getElementById('authNfcIcon');
-  status.innerText = 'جاري استشعار الشريحة الذكية NTAG216...';
+  if (status) status.innerText = 'جاري استشعار الشريحة الذكية NTAG216...';
 
   setTimeout(() => {
     AppState.nfcScanned = true;
-    icon.style.color = '#10b981';
-    status.innerText = 'تم ربط الشريحة بنجاح! UID: IDC-NFC-9942';
-    status.className = 'text-xs text-emerald-400 font-bold mt-1';
+    if (icon) icon.style.color = '#10b981';
+    if (status) {
+      status.innerText = 'تم ربط الشريحة بنجاح! UID: IDC-NFC-9942';
+      status.className = 'text-xs text-emerald-400 font-bold mt-1';
+    }
     sfx.playSuccess();
   }, 1000);
 }
@@ -390,21 +527,34 @@ function drawAuthQrPreview() {
   AppState.qrScanned = true;
 }
 
-// معالجة نموذج التسجيل / الدخول
-function handleAuthSubmit(event) {
-  if (event) event.preventDefault();
+// المتابعة الفورية بحساب تجريبي
+function quickDemoLogin() {
+  sfx.playSuccess();
+  localStorage.setItem('idc_is_registered', 'true');
+  localStorage.setItem('idc_auth_method', 'nfc');
+  AppState.isRegistered = true;
+  AppState.isAppLocked = false;
+  AppState.activeAuthMethod = 'nfc';
+  saveOfflineData();
+  updateDataInViews();
+  drawOfflineQrCode();
+  drawEgyptHeroQr();
+  closeModal('authRegisterModal');
+  checkAppAccessState();
+  showToast('مرحباً بك! تم الدخول السريع في وضع المعاينة المعتمد لمنظومة IDC');
+}
 
-  const name = document.getElementById('authFullName').value.trim();
-  const job = document.getElementById('authJobTitle').value.trim();
-  const nid = document.getElementById('authNationalId').value.trim();
-  const blood = document.getElementById('authBloodType').value;
-  const pass = document.getElementById('authPassword').value.trim();
+// إنهاء التسجيل والدخول بعد مراجعة الأقسام الثلاثة
+function finishAuthAndEnter() {
+  const nameEl = document.getElementById('authFullName');
+  const jobEl = document.getElementById('authJobTitle');
+  const nidEl = document.getElementById('authNationalId');
+  const passEl = document.getElementById('authPassword');
 
-  if (name) AppState.offlineData.fullName = name;
-  if (job) AppState.offlineData.jobTitle = job;
-  if (nid) AppState.offlineData.nationalId = nid;
-  if (blood) AppState.offlineData.bloodType = blood;
-  if (pass) AppState.offlineData.offlinePin = pass;
+  if (nameEl && nameEl.value.trim()) AppState.offlineData.fullName = nameEl.value.trim();
+  if (jobEl && jobEl.value.trim()) AppState.offlineData.jobTitle = jobEl.value.trim();
+  if (nidEl && nidEl.value.trim()) AppState.offlineData.nationalId = nidEl.value.trim();
+  if (passEl && passEl.value.trim()) AppState.offlineData.offlinePin = passEl.value.trim();
   AppState.offlineData.authMethod = AppState.activeAuthMethod;
   AppState.offlineData.lastUpdated = new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
@@ -416,6 +566,7 @@ function handleAuthSubmit(event) {
   saveOfflineData();
   updateDataInViews();
   drawOfflineQrCode();
+  drawEgyptHeroQr();
 
   closeModal('authRegisterModal');
   checkAppAccessState();
@@ -574,6 +725,7 @@ function renderAll() {
   renderCertificatesList();
   renderTrustedCompanies();
   updateDataInViews();
+  drawEgyptHeroQr();
 }
 
 function setAppMode(newMode) {
@@ -586,6 +738,7 @@ function setAppMode(newMode) {
   const sectionOffline = document.getElementById('sectionOffline');
   const connectionStatusBar = document.getElementById('connectionStatusBar');
   const offlineQuickBadge = document.getElementById('offlineQuickBadge');
+  const egyptCardStatusPill = document.getElementById('egyptCardStatusPill');
 
   if (newMode === 'online') {
     if (btnOnline) btnOnline.classList.add('active-online');
@@ -609,6 +762,14 @@ function setAppMode(newMode) {
         </div>
       `;
     }
+    if (egyptCardStatusPill) {
+      egyptCardStatusPill.className = 'flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/25 backdrop-blur-sm border border-white/20 text-xs font-bold text-white';
+      egyptCardStatusPill.innerHTML = `
+        <span class="material-symbols-outlined text-sm text-emerald-300 animate-pulse">lock</span>
+        <span id="egyptCardStatusTxt">متصل</span>
+        <span class="material-symbols-outlined text-sm">wifi</span>
+      `;
+    }
     if (offlineQuickBadge) offlineQuickBadge.classList.add('hidden');
   } else {
     if (btnOffline) btnOffline.classList.add('active-offline');
@@ -626,6 +787,13 @@ function setAppMode(newMode) {
         <div class="flex items-center gap-2 text-xs text-orange-200">
           <span class="bg-orange-950/80 px-2 py-0.5 rounded border border-orange-500/30 font-bold">ذاكرة محلية 100%</span>
         </div>
+      `;
+    }
+    if (egyptCardStatusPill) {
+      egyptCardStatusPill.className = 'flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-950/70 border border-orange-500/40 text-xs font-bold text-orange-200';
+      egyptCardStatusPill.innerHTML = `
+        <span class="material-symbols-outlined text-sm text-orange-400">cloud_off</span>
+        <span id="egyptCardStatusTxt">أوفلاين محلي</span>
       `;
     }
     if (offlineQuickBadge) offlineQuickBadge.classList.remove('hidden');
