@@ -50,10 +50,12 @@
 </head>
 <body class="bg-[#001224] text-slate-100 font-cairo min-h-screen flex flex-col selection:bg-cyan-500 selection:text-slate-950">
 
-    <!-- Top Ambient Lights -->
-    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-cyan-500/10 via-teal-500/5 to-transparent blur-3xl pointer-events-none -z-10"></div>
-    <div class="fixed -bottom-24 -right-24 w-96 h-96 bg-teal-600/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
-    <div class="fixed -bottom-24 -left-24 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+    <!-- Top Ambient Lights (Contained to prevent mobile horizontal expansion) -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-cyan-500/10 via-teal-500/5 to-transparent blur-3xl"></div>
+        <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-teal-600/10 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl"></div>
+    </div>
 
     <!-- ========================================================================= -->
     <!-- 1. GITHUB MOBILE STYLE LANDING & ENTRY PORTAL (شاشة البداية النظيفة باللون الأسود) -->
@@ -122,23 +124,23 @@
     <!-- ========================================================================= -->
     <!-- GOOGLE-INSPIRED TOP APP BAR (الواجهة العلوية بنمط تطبيق Google) -->
     <!-- ========================================================================= -->
-    <header class="bg-[#001933]/90 border-b border-cyan-500/20 backdrop-blur-md sticky top-0 z-40 transition-all shadow-xl">
-        <div class="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3">
+    <header class="bg-[#001933]/90 border-b border-cyan-500/20 backdrop-blur-md sticky top-0 z-40 transition-all shadow-xl w-full max-w-full overflow-hidden">
+        <div class="max-w-6xl mx-auto px-2.5 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-1.5 sm:gap-3">
             
             <!-- Left Corner (Google-Style Menu / Settings & Customer Support Drawer Button) -->
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
                 <button onclick="openSettingsDrawer()" class="google-nav-btn" title="الإعدادات وخدمة العملاء">
-                    <span class="material-symbols-outlined text-2xl text-slate-200">menu</span>
+                    <span class="material-symbols-outlined text-xl sm:text-2xl text-slate-200">menu</span>
                 </button>
 
                 <!-- Brand Name & Logo -->
-                <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-400 flex items-center justify-center shadow-lg shadow-cyan-500/30 text-slate-950 font-black">
-                        <span class="material-symbols-outlined text-xl">shield</span>
+                <div class="flex items-center gap-1.5 sm:gap-2.5">
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-400 flex items-center justify-center shadow-lg shadow-cyan-500/30 text-slate-950 font-black shrink-0">
+                        <span class="material-symbols-outlined text-lg sm:text-xl">shield</span>
                     </div>
                     <div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-extrabold text-base text-white tracking-tight">منظومة IDC</span>
+                        <div class="flex items-center gap-1">
+                            <span class="font-extrabold text-sm sm:text-base text-white tracking-tight">IDC</span>
                             <span class="text-[9px] bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold px-1.5 py-0.2 rounded-full font-mono">Vault</span>
                         </div>
                         <p class="text-[10px] text-slate-400 hidden sm:block">حفظ وأمان البيانات • Nothing more nothing less</p>
@@ -147,26 +149,26 @@
             </div>
 
             <!-- Center: Mode Selector Switch (Online vs Offline) -->
-            <div class="flex items-center bg-[#00142b] p-1 rounded-2xl border border-white/10 shadow-inner">
-                <button id="modeBtnOnline" onclick="setAppMode('online')" class="switch-mode-btn active-online px-3 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all">
-                    <span class="material-symbols-outlined text-base">cloud_done</span>
+            <div class="flex items-center bg-[#00142b] p-0.5 sm:p-1 rounded-2xl border border-white/10 shadow-inner shrink-0">
+                <button id="modeBtnOnline" onclick="setAppMode('online')" class="switch-mode-btn active-online px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1 sm:gap-1.5 transition-all">
+                    <span class="material-symbols-outlined text-sm sm:text-base">cloud_done</span>
                     <span class="hidden xs:inline">أونلاين</span>
                 </button>
-                <button id="modeBtnOffline" onclick="setAppMode('offline')" class="switch-mode-btn px-3 sm:px-4 py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 text-slate-400 hover:text-white transition-all">
-                    <span class="material-symbols-outlined text-base text-orange-400">offline_pin</span>
+                <button id="modeBtnOffline" onclick="setAppMode('offline')" class="switch-mode-btn px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1 sm:gap-1.5 text-slate-400 hover:text-white transition-all">
+                    <span class="material-symbols-outlined text-sm sm:text-base text-orange-400">offline_pin</span>
                     <span class="hidden xs:inline">أوفلاين</span>
                 </button>
             </div>
 
             <!-- Right Corner (Fast Tools + Google-Style Profile Picture Avatar Button) -->
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1 sm:gap-2 shrink-0">
                 <!-- NFC Tap Simulator -->
-                <button onclick="triggerNfcTapSimulation()" class="p-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 flex items-center justify-center transition-all active:scale-95" title="محاكاة لمس NFC">
+                <button onclick="triggerNfcTapSimulation()" class="p-1.5 sm:p-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 flex items-center justify-center transition-all active:scale-95" title="محاكاة لمس NFC">
                     <span class="material-symbols-outlined text-base animate-pulse">contactless</span>
                 </button>
 
                 <!-- Fast Lock -->
-                <button onclick="lockApplication()" class="p-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 flex items-center justify-center transition-all" title="قفل المنظومة">
+                <button onclick="lockApplication()" class="p-1.5 sm:p-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 flex items-center justify-center transition-all" title="قفل المنظومة">
                     <span class="material-symbols-outlined text-base">lock</span>
                 </button>
 
@@ -186,9 +188,9 @@
     </header>
 
     <!-- MAIN VIEWPORT WRAPPER -->
-    <div id="appViewportWrapper" class="w-full flex-1 flex flex-col items-center justify-start py-4 sm:py-8 px-2 sm:px-4 transition-all duration-300">
+    <div id="appViewportWrapper" class="w-full flex-1 flex flex-col items-center justify-start py-3 sm:py-8 px-2 sm:px-4 transition-all duration-300 overflow-x-hidden min-w-0 max-w-full">
         
-        <main id="appContainer" class="w-full max-w-4xl flex flex-col gap-6 transition-all duration-300">
+        <main id="appContainer" class="w-full max-w-4xl flex flex-col gap-5 sm:gap-6 transition-all duration-300 min-w-0 mx-auto">
 
             <!-- Simulated Phone Notch -->
             <div id="phoneTopNotch" class="phone-notch hidden">
@@ -199,60 +201,60 @@
             <!-- ========================================================================= -->
             <!-- EGYPT DIGITAL IDENTITY HERO CARD (مطابق تماماً للديمو الأول والصورة المرفقة) -->
             <!-- ========================================================================= -->
-            <section class="egypt-id-card mb-2">
+            <section class="egypt-id-card mb-2 w-full max-w-full min-w-0 overflow-hidden">
                 <!-- 1. Top Green Banner (From Screenshot) -->
                 <div class="egypt-card-header">
-                    <div class="flex items-center justify-between gap-3 mb-2">
+                    <div class="flex items-center justify-between gap-1.5 sm:gap-3 mb-2">
                         <!-- Left Status Pill -->
-                        <div id="egyptCardStatusPill" class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/25 backdrop-blur-sm border border-white/20 text-xs font-bold text-white">
-                            <span class="material-symbols-outlined text-sm text-emerald-300 animate-pulse">lock</span>
+                        <div id="egyptCardStatusPill" class="flex items-center gap-1 sm:gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-black/25 backdrop-blur-sm border border-white/20 text-[11px] sm:text-xs font-bold text-white shrink-0">
+                            <span class="material-symbols-outlined text-xs sm:text-sm text-emerald-300 animate-pulse">lock</span>
                             <span id="egyptCardStatusTxt">متصل</span>
-                            <span class="material-symbols-outlined text-sm">wifi</span>
+                            <span class="material-symbols-outlined text-xs sm:text-sm">wifi</span>
                         </div>
 
                         <!-- Right Gov Authority -->
-                        <div class="flex items-center gap-2 text-right">
-                            <span class="text-xs sm:text-sm font-extrabold tracking-tight text-white/95">قطاع الأحوال المدنية • منظومة IDC</span>
-                            <span class="material-symbols-outlined text-lg sm:text-xl text-amber-300">account_balance</span>
+                        <div class="flex items-center gap-1 sm:gap-2 text-right shrink-0">
+                            <span class="text-[11px] sm:text-sm font-extrabold tracking-tight text-white/95">قطاع الأحوال المدنية • منظومة IDC</span>
+                            <span class="material-symbols-outlined text-base sm:text-xl text-amber-300">account_balance</span>
                         </div>
                     </div>
 
                     <!-- Title & Golden Circular EG Badge -->
-                    <div class="flex items-center justify-between gap-4 pt-1">
-                        <div>
-                            <h2 class="text-xl sm:text-2xl font-black tracking-tight text-white">الهوية الوطنية الرقمية</h2>
-                            <span class="text-[10px] sm:text-xs text-emerald-100 font-mono tracking-widest uppercase font-bold block">EGYPT DIGITAL IDENTITY CARD</span>
+                    <div class="flex items-center justify-between gap-2 sm:gap-4 pt-1">
+                        <div class="min-w-0">
+                            <h2 class="text-lg sm:text-2xl font-black tracking-tight text-white">الهوية الوطنية الرقمية</h2>
+                            <span class="text-[9px] sm:text-xs text-emerald-100 font-mono tracking-wider sm:tracking-widest uppercase font-bold block">EGYPT DIGITAL IDENTITY CARD</span>
                         </div>
-                        <div class="egypt-eg-badge" title="جمهورية مصر العربية - وثيقة رقمية موثقة">
+                        <div class="egypt-eg-badge shrink-0" title="جمهورية مصر العربية - وثيقة رقمية موثقة">
                             <span>EG</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- 2. White Sub-tabs Strip (رمز الـ QR | البطاقة | المحفظة) -->
-                <nav class="egypt-subtabs">
+                <nav class="egypt-subtabs w-full max-w-full min-w-0">
                     <!-- Tab 1: QR -->
                     <button id="egyptTabBtn-qr" onclick="switchEgyptCardTab('qr')" class="egypt-subtab-btn">
-                        <span class="material-symbols-outlined text-lg">qr_code_2</span>
+                        <span class="material-symbols-outlined text-base sm:text-lg">qr_code_2</span>
                         <span>رمز الـ QR</span>
                     </button>
 
                     <!-- Tab 2: البطاقة (Active by default) -->
                     <button id="egyptTabBtn-card" onclick="switchEgyptCardTab('card')" class="egypt-subtab-btn active-subtab">
-                        <span class="material-symbols-outlined text-lg">credit_card</span>
+                        <span class="material-symbols-outlined text-base sm:text-lg">credit_card</span>
                         <span>البطاقة</span>
                     </button>
 
                     <!-- Tab 3: المحفظة -->
                     <button id="egyptTabBtn-wallet" onclick="switchEgyptCardTab('wallet')" class="egypt-subtab-btn">
-                        <span class="material-symbols-outlined text-lg">folder_shared</span>
+                        <span class="material-symbols-outlined text-base sm:text-lg">folder_shared</span>
                         <span>المحفظة</span>
                     </button>
                 </nav>
 
                 <!-- 3. Sub-views Body -->
                 <!-- VIEW A: THE CARD VIEW (البطاقة) -->
-                <div id="egyptCardView-card" class="egypt-card-body">
+                <div id="egyptCardView-card" class="egypt-card-body overflow-hidden">
                     <!-- Security Watermark -->
                     <div class="absolute -left-10 -bottom-10 opacity-5 pointer-events-none select-none">
                         <span class="material-symbols-outlined text-[200px] text-cyan-400">shield</span>
@@ -413,29 +415,29 @@
             <div id="sectionOnline" class="flex flex-col gap-6">
 
                 <!-- Online Partition Tabs Header (الأقسام الثلاثة الرئيسية) -->
-                <nav class="glass-panel rounded-2xl p-1.5 flex gap-1.5 overflow-x-auto shadow-lg border border-cyan-500/20">
+                <nav class="glass-panel rounded-2xl p-1.5 flex gap-1.5 overflow-x-auto shadow-lg border border-cyan-500/20 max-w-full min-w-0">
                     <!-- Tab 1: Public -->
-                    <button id="tabBtn-public" onclick="switchOnlineTab('public')" class="flex-1 min-w-[120px] py-3 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-lg shadow-cyan-600/30">
-                        <span class="material-symbols-outlined text-lg">public</span>
+                    <button id="tabBtn-public" onclick="switchOnlineTab('public')" class="shrink-0 min-w-max py-2.5 sm:py-3 px-3 sm:px-3.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-lg shadow-cyan-600/30">
+                        <span class="material-symbols-outlined text-base sm:text-lg">public</span>
                         <span>1. الواجهة العامة (Public)</span>
                     </button>
 
                     <!-- Tab 2: Private Vault (Password / Biometric Protected) -->
-                    <button id="tabBtn-private" onclick="switchOnlineTab('private')" class="flex-1 min-w-[130px] py-3 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all text-slate-300 hover:text-white hover:bg-slate-800/60">
-                        <span class="material-symbols-outlined text-lg text-amber-400">lock</span>
+                    <button id="tabBtn-private" onclick="switchOnlineTab('private')" class="shrink-0 min-w-max py-2.5 sm:py-3 px-3 sm:px-3.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all text-slate-300 hover:text-white hover:bg-slate-800/60">
+                        <span class="material-symbols-outlined text-base sm:text-lg text-amber-400">lock</span>
                         <span>2. الخزنة الخاصة (Private)</span>
                     </button>
 
                     <!-- Tab 3: Active Certificates (With Individual Passwords) -->
-                    <button id="tabBtn-certificates" onclick="switchOnlineTab('certificates')" class="flex-1 min-w-[140px] py-3 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all text-slate-300 hover:text-white hover:bg-slate-800/60">
-                        <span class="material-symbols-outlined text-lg text-emerald-400">verified</span>
+                    <button id="tabBtn-certificates" onclick="switchOnlineTab('certificates')" class="shrink-0 min-w-max py-2.5 sm:py-3 px-3 sm:px-3.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all text-slate-300 hover:text-white hover:bg-slate-800/60">
+                        <span class="material-symbols-outlined text-base sm:text-lg text-emerald-400">verified</span>
                         <span>3. الوثائق والشهادات السارية</span>
-                        <span class="text-[9px] bg-emerald-500/30 text-emerald-300 px-1.5 py-0.2 rounded font-bold">باسوورد لكل وثيقة</span>
+                        <span class="text-[9px] bg-emerald-500/30 text-emerald-300 px-1.5 py-0.2 rounded font-bold hidden sm:inline">باسوورد لكل وثيقة</span>
                     </button>
 
                     <!-- Tab 4: Trusted Entities -->
-                    <button id="tabBtn-validity" onclick="switchOnlineTab('validity')" class="flex-1 min-w-[140px] py-3 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all text-slate-300 hover:text-white hover:bg-slate-800/60">
-                        <span class="material-symbols-outlined text-lg text-cyan-400">verified_user</span>
+                    <button id="tabBtn-validity" onclick="switchOnlineTab('validity')" class="shrink-0 min-w-max py-2.5 sm:py-3 px-3 sm:px-3.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all text-slate-300 hover:text-white hover:bg-slate-800/60">
+                        <span class="material-symbols-outlined text-base sm:text-lg text-cyan-400">verified_user</span>
                         <span>4. الجهات الموثوقة</span>
                     </button>
                 </nav>
