@@ -365,3 +365,199 @@ body {
   color: #ffffff;
   box-shadow: 0 4px 15px rgba(255, 119, 0, 0.4);
 }
+
+/* GitHub-Inspired Minimalist Welcome & Landing Portal */
+.github-style-landing {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background-color: #030712;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3rem 1.5rem 2rem 1.5rem;
+  overflow-y: auto;
+}
+
+.github-main-btn {
+  background-color: #ffffff;
+  color: #030712;
+  font-weight: 800;
+  border-radius: 14px;
+  padding: 1rem 1.5rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
+}
+.github-main-btn:hover {
+  background-color: #e5e7eb;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(255, 255, 255, 0.25);
+}
+.github-main-btn:active {
+  transform: scale(0.98);
+}
+
+.github-secondary-btn {
+  background-color: #111827;
+  color: #f3f4f6;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-weight: 700;
+  border-radius: 14px;
+  padding: 1rem 1.5rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+.github-secondary-btn:hover {
+  background-color: #1f2937;
+  border-color: rgba(6, 182, 212, 0.5);
+  color: #22d3ee;
+}
+.github-secondary-btn:active {
+  transform: scale(0.98);
+}
+
+/* Google-Inspired Top Bar Elements */
+.google-nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f1f5f9;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.google-nav-btn:hover {
+  background-color: rgba(6, 182, 212, 0.15);
+  border-color: rgba(6, 182, 212, 0.4);
+  color: #22d3ee;
+  transform: scale(1.05);
+}
+.google-nav-btn:active {
+  transform: scale(0.95);
+}
+
+.google-avatar-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #06b6d4;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.35);
+  transition: all 0.25s ease;
+  position: relative;
+}
+.google-avatar-btn:hover {
+  transform: scale(1.08);
+  border-color: #22d3ee;
+  box-shadow: 0 0 25px rgba(6, 182, 212, 0.6);
+}
+
+/* Sliding Drawer Styles (Settings & Customer Support) */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 105;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: flex-start;
+  transition: all 0.3s ease;
+}
+[dir="rtl"] .drawer-backdrop {
+  justify-content: flex-end;
+}
+
+.drawer-panel {
+  width: 100%;
+  max-width: 380px;
+  height: 100%;
+  background: #00172e;
+  border-right: 1px solid rgba(6, 182, 212, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+  animation: slideDrawer 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[dir="rtl"] .drawer-panel {
+  border-right: none;
+  border-left: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+@keyframes slideDrawer {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+[dir="ltr"] @keyframes slideDrawer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+/* Onboarding & Lock Gate Screen Styles */
+.gate-screen-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: radial-gradient(circle at 50% 30%, rgba(0, 36, 70, 0.95) 0%, rgba(0, 15, 30, 0.98) 100%);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+
+.biometric-pulse-ring {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.25) 0%, rgba(0, 24, 48, 0.9) 75%);
+  border: 2px solid rgba(6, 182, 212, 0.6);
+  box-shadow: 0 0 35px rgba(6, 182, 212, 0.35);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.biometric-pulse-ring::before {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  border: 2px solid rgba(6, 182, 212, 0.3);
+  animation: nfcWave 2.2s infinite ease-out;
+}
+
+.biometric-pulse-ring:hover {
+  transform: scale(1.06);
+  border-color: #22d3ee;
+  box-shadow: 0 0 50px rgba(6, 182, 212, 0.6);
+}
+
+.biometric-pulse-ring:active {
+  transform: scale(0.94);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.5) 0%, rgba(0, 24, 48, 0.9) 75%);
+  border-color: #10b981;
+  box-shadow: 0 0 50px rgba(16, 185, 129, 0.6);
+}

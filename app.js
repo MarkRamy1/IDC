@@ -112,6 +112,7 @@ const DEFAULT_OFFLINE_DATA = {
   emergencyNotes: 'في حالة الحوادث أو الطوارئ: يرجى التواصل فوراً مع جهات الاتصال المسجلة وإبراز هذه البطاقة الرقمية IDC للطواقم الطبية. مسجل كمتبرع أعضاء رسمي.',
   organDonor: true,
   offlinePin: '1234',
+  authMethod: 'nfc', // 'nfc' | 'qr'
   lastUpdated: new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })
 };
 
@@ -218,6 +219,9 @@ let AppState = {
   onlineTab: 'public', // 'public' | 'private' | 'certificates' | 'validity'
   isRegistered: false, // controlled by localStorage 'idc_is_registered'
   isAppLocked: true,   // prompts fingerprint every time app is opened if registered
+  activeAuthMethod: 'nfc', // 'nfc' | 'qr'
+  nfcScanned: false,
+  qrScanned: false,
   offlineUnlocked: false,
   privateVaultUnlocked: false,
   offlineData: { ...DEFAULT_OFFLINE_DATA },
@@ -240,6 +244,9 @@ document.addEventListener('DOMContentLoaded', () => {
 function loadStoredData() {
   const isReg = localStorage.getItem('idc_is_registered');
   AppState.isRegistered = (isReg === 'true');
+
+  const savedAuthMethod = localStorage.getItem('idc_auth_method');
+  if (savedAuthMethod) AppState.activeAuthMethod = savedAuthMethod;
 
   const savedOffline = localStorage.getItem('idc_offline_data');
   if (savedOffline) {
@@ -269,60 +276,152 @@ function saveCertsData() {
   localStorage.setItem('idc_certs_data', JSON.stringify(AppState.certificates));
 }
 
-// --- GATEKEEPER & ACCESS FLOW (تسجيل أولاً ثم قفل ببصمة الإصبع عند كل فتح) ---
+// --- GATEKEEPER & ACCESS STATE (الواجهة الترحيبية + شاشة القفل بالبصمة عند كل فتح) ---
 function checkAppAccessState() {
-  const onboarding = document.getElementById('onboardingScreen');
+  const landingPortal = document.getElementById('landingPortal');
   const lockGate = document.getElementById('appLockGate');
   const appContainer = document.getElementById('appContainer');
 
   if (!AppState.isRegistered) {
-    // الحالة 1: مستخدم جديد لأول مرة -> شاشة تسجيل البيانات أولاً
-    if (onboarding) onboarding.classList.remove('hidden');
+    // الحالة 1: غير مسجل -> واجهة الدخول النظيفة (نمط GitHub)
+    if (landingPortal) landingPortal.classList.remove('hidden');
     if (lockGate) lockGate.classList.add('hidden');
     if (appContainer) appContainer.classList.add('hidden');
   } else if (AppState.isAppLocked) {
-    // الحالة 2: مستخدم مسجل مسبقاً -> شاشة القفل بالبصمة كل مرة يفتح التطبيق
-    if (onboarding) onboarding.classList.add('hidden');
+    // الحالة 2: مسجل ومقفل -> يطلب البصمة كل مرة يفتح التطبيق
+    if (landingPortal) landingPortal.classList.add('hidden');
     if (lockGate) lockGate.classList.remove('hidden');
     if (appContainer) appContainer.classList.add('hidden');
   } else {
-    // الحالة 3: تم التحقق بالبصمة بنجاح -> فتح الأقسام الثلاثة
-    if (onboarding) onboarding.classList.add('hidden');
+    // الحالة 3: مفتوح بنجاح -> عرض لوحة التحكم والأقسام الثلاثة
+    if (landingPortal) landingPortal.classList.add('hidden');
     if (lockGate) lockGate.classList.add('hidden');
     if (appContainer) appContainer.classList.remove('hidden');
   }
 }
 
-// تسجيل هوية جديدة لأول مرة
-function handleRegistrationSubmit(event) {
+// فتح نافذة التسجيل/الدخول باختيار (Password + NFC) أو (Password + QR)
+function openAuthModal(method = 'nfc') {
+  sfx.playBeep();
+  AppState.activeAuthMethod = method;
+  AppState.nfcScanned = false;
+  AppState.qrScanned = false;
+
+  const modal = document.getElementById('authRegisterModal');
+  const title = document.getElementById('authModalTitle');
+  const subtitle = document.getElementById('authModalSubtitle');
+  const nfcSection = document.getElementById('authNfcSection');
+  const qrSection = document.getElementById('authQrSection');
+  const submitBtnText = document.getElementById('authSubmitBtnText');
+
+  if (method === 'nfc') {
+    title.innerText = 'الدخول والتسجيل بواسطة (Password + NFC)';
+    subtitle.innerText = 'المس شريحة NFC المعتمدة وأدخل كلمة المرور لتأكيد الهوية المشفرة';
+    nfcSection.classList.remove('hidden');
+    qrSection.classList.add('hidden');
+    submitBtnText.innerText = 'تأكيد التسجيل والدخول عبر NFC';
+  } else {
+    title.innerText = 'الدخول والتسجيل بواسطة (Password + QR)';
+    subtitle.innerText = 'للمستخدمين بدون شريحة NFC: استخدم رمز QR الرقمي المعتمد وكلمة المرور';
+    nfcSection.classList.add('hidden');
+    qrSection.classList.remove('hidden');
+    submitBtnText.innerText = 'تأكيد التسجيل والدخول عبر QR';
+    drawAuthQrPreview();
+  }
+
+  // Pre-fill existing data if available
+  const d = AppState.offlineData;
+  document.getElementById('authFullName').value = d.fullName || '';
+  document.getElementById('authJobTitle').value = d.jobTitle || '';
+  document.getElementById('authNationalId').value = d.nationalId || '';
+  document.getElementById('authBloodType').value = d.bloodType || 'O+';
+  document.getElementById('authPassword').value = d.offlinePin || '';
+
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+// محاكاة لمس شريحة NFC أثناء التسجيل
+function simulateAuthNfcScan() {
+  sfx.playBeep();
+  const status = document.getElementById('authNfcStatusTxt');
+  const icon = document.getElementById('authNfcIcon');
+  status.innerText = 'جاري استشعار الشريحة الذكية NTAG216...';
+
+  setTimeout(() => {
+    AppState.nfcScanned = true;
+    icon.style.color = '#10b981';
+    status.innerText = 'تم ربط الشريحة بنجاح! UID: IDC-NFC-9942';
+    status.className = 'text-xs text-emerald-400 font-bold mt-1';
+    sfx.playSuccess();
+  }, 1000);
+}
+
+// رسم كود QR للمستخدمين بدون NFC
+function drawAuthQrPreview() {
+  const canvas = document.getElementById('authQrCanvasPreview');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const size = 120;
+  canvas.width = size;
+  canvas.height = size;
+
+  ctx.fillStyle = '#001e38';
+  ctx.fillRect(0, 0, size, size);
+
+  ctx.strokeStyle = '#06b6d4';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(3, 3, size - 6, size - 6);
+
+  ctx.fillStyle = '#22d3ee';
+  ctx.fillRect(8, 8, 26, 26);
+  ctx.fillRect(size - 34, 8, 26, 26);
+  ctx.fillRect(8, size - 34, 26, 26);
+
+  ctx.fillStyle = '#38bdf8';
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      if ((r * c + r) % 2 === 0) {
+        ctx.fillRect(44 + c * 4, 44 + r * 4, 3, 3);
+      }
+    }
+  }
+
+  AppState.qrScanned = true;
+}
+
+// معالجة نموذج التسجيل / الدخول
+function handleAuthSubmit(event) {
   if (event) event.preventDefault();
 
-  const name = document.getElementById('regFullName').value.trim();
-  const job = document.getElementById('regJobTitle').value.trim();
-  const nid = document.getElementById('regNationalId').value.trim();
-  const blood = document.getElementById('regBloodType').value;
-  const pin = document.getElementById('regPin').value.trim();
-  const phone = document.getElementById('regEmergencyPhone').value.trim();
+  const name = document.getElementById('authFullName').value.trim();
+  const job = document.getElementById('authJobTitle').value.trim();
+  const nid = document.getElementById('authNationalId').value.trim();
+  const blood = document.getElementById('authBloodType').value;
+  const pass = document.getElementById('authPassword').value.trim();
 
   if (name) AppState.offlineData.fullName = name;
   if (job) AppState.offlineData.jobTitle = job;
   if (nid) AppState.offlineData.nationalId = nid;
   if (blood) AppState.offlineData.bloodType = blood;
-  if (pin) AppState.offlineData.offlinePin = pin;
-  if (phone) AppState.offlineData.emergencyContact1Phone = phone;
+  if (pass) AppState.offlineData.offlinePin = pass;
+  AppState.offlineData.authMethod = AppState.activeAuthMethod;
   AppState.offlineData.lastUpdated = new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
   localStorage.setItem('idc_is_registered', 'true');
+  localStorage.setItem('idc_auth_method', AppState.activeAuthMethod);
   AppState.isRegistered = true;
   AppState.isAppLocked = false;
 
   saveOfflineData();
   updateDataInViews();
   drawOfflineQrCode();
+
+  closeModal('authRegisterModal');
   checkAppAccessState();
 
   sfx.playSuccess();
-  showToast('تم تسجيل هويتك الرقمية بنجاح! تم فتح الأقسام الثلاثة.');
+  showToast(`تم الدخول بنجاح عبر (${AppState.activeAuthMethod === 'nfc' ? 'Password + NFC' : 'Password + QR'})!`);
 }
 
 // فتح التطبيق بالبصمة عند الفتح
@@ -356,23 +455,117 @@ function unlockAppWithBiometric(method = 'fingerprint') {
   }
 }
 
-// زر قفل التطبيق من الهيدر
+// قفل المنظومة
 function lockApplication() {
   sfx.playBeep();
   AppState.isAppLocked = true;
+  closeSettingsDrawer();
+  closeAccountModal();
   checkAppAccessState();
-  showToast('تم قفل المنظومة بنجاح');
+  showToast('تم قفل منظومة IDC بنجاح');
 }
 
-// إعادة التسجيل وتجربة الشاشة الأولى من جديد
+// تسجيل الخروج والعودة للواجهة الرئيسية
+function signOutToLanding() {
+  if (confirm('هل ترغب في تسجيل الخروج والعودة إلى شاشة البداية؟')) {
+    sfx.playBeep();
+    AppState.isAppLocked = true;
+    closeSettingsDrawer();
+    closeAccountModal();
+    const landing = document.getElementById('landingPortal');
+    const lockGate = document.getElementById('appLockGate');
+    const appContainer = document.getElementById('appContainer');
+
+    if (landing) landing.classList.remove('hidden');
+    if (lockGate) lockGate.classList.add('hidden');
+    if (appContainer) appContainer.classList.add('hidden');
+  }
+}
+
+// إعادة ضبط المنظومة وتسجيل هوية جديدة
 function restartRegistration() {
-  if (confirm('هل ترغب في تسجيل هوية جديدة وإعادة إدخال البيانات من البداية؟')) {
+  if (confirm('هل ترغب في إعادة ضبط المنظومة وتسجيل هوية جديدة؟')) {
+    sfx.playBeep();
     localStorage.removeItem('idc_is_registered');
     AppState.isRegistered = false;
     AppState.isAppLocked = true;
+    closeSettingsDrawer();
+    closeAccountModal();
     checkAppAccessState();
-    showToast('تمت إعادة ضبط جلسة التسجيل');
+    showToast('تمت إعادة ضبط المنظومة بنجاح. يرجى تسجيل الهوية للبدء.');
   }
+}
+
+// --- GOOGLE-STYLE SETTINGS DRAWER & ACCOUNT SHEET ---
+function openSettingsDrawer() {
+  sfx.playBeep();
+  const drawer = document.getElementById('settingsDrawerModal');
+  drawer.classList.remove('hidden');
+  drawer.classList.add('flex');
+}
+
+function closeSettingsDrawer() {
+  const drawer = document.getElementById('settingsDrawerModal');
+  if (drawer) {
+    drawer.classList.add('hidden');
+    drawer.classList.remove('flex');
+  }
+}
+
+function openAccountModal() {
+  sfx.playBeep();
+  const modal = document.getElementById('accountQuickModal');
+  const authTag = document.getElementById('accountAuthMethodTag');
+  if (authTag) {
+    authTag.innerText = AppState.activeAuthMethod === 'nfc' ? 'موثق عبر NFC + Password' : 'موثق عبر QR + Password';
+  }
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function closeAccountModal() {
+  const modal = document.getElementById('accountQuickModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+
+// --- CUSTOMER SERVICE & SUPPORT MODAL ---
+function openCustomerServiceModal() {
+  sfx.playBeep();
+  closeSettingsDrawer();
+  const modal = document.getElementById('customerServiceModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+function sendCustomerServiceMessage(event) {
+  if (event) event.preventDefault();
+  const input = document.getElementById('supportMsgInput');
+  const text = input ? input.value.trim() : '';
+  if (!text) return;
+
+  sfx.playSuccess();
+  const chatBox = document.getElementById('supportChatBox');
+  if (chatBox) {
+    const userMsg = document.createElement('div');
+    userMsg.className = 'p-3 rounded-2xl bg-cyan-600/30 border border-cyan-500/30 text-white text-xs max-w-[85%] self-end';
+    userMsg.innerText = text;
+    chatBox.appendChild(userMsg);
+
+    input.value = '';
+
+    setTimeout(() => {
+      sfx.playBeep();
+      const botMsg = document.createElement('div');
+      botMsg.className = 'p-3 rounded-2xl bg-slate-900 border border-white/10 text-slate-200 text-xs max-w-[85%] self-start';
+      botMsg.innerText = 'مرحباً بك في خدمة عملاء IDC. تم تسجيل طلبك تحت رقم تذكرة (#IDC-9921) وسيتواصل معك الدعم الفني فوراً.';
+      chatBox.appendChild(botMsg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }, 800);
+  }
+  showToast('تم إرسال رسالتك إلى خدمة عملاء IDC بنجاح!');
 }
 
 // --- RENDER ENGINE ---
@@ -395,43 +588,47 @@ function setAppMode(newMode) {
   const offlineQuickBadge = document.getElementById('offlineQuickBadge');
 
   if (newMode === 'online') {
-    btnOnline.classList.add('active-online');
-    btnOffline.classList.remove('active-offline');
-    sectionOnline.classList.remove('hidden');
-    sectionOffline.classList.add('hidden');
+    if (btnOnline) btnOnline.classList.add('active-online');
+    if (btnOffline) btnOffline.classList.remove('active-offline');
+    if (sectionOnline) sectionOnline.classList.remove('hidden');
+    if (sectionOffline) sectionOffline.classList.add('hidden');
 
-    connectionStatusBar.className = 'py-2 px-4 rounded-2xl bg-cyan-950/40 border border-cyan-500/20 backdrop-blur-md flex items-center justify-between transition-all';
-    connectionStatusBar.innerHTML = `
-      <div class="flex items-center gap-2">
-        <span class="relative flex h-3 w-3">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-        </span>
-        <span class="text-xs sm:text-sm font-bold text-cyan-300">السحابة المركزية لـ IDC متصلة وموثقة (Online Synchronized)</span>
-      </div>
-      <div class="flex items-center gap-2 text-xs text-slate-300">
-        <span class="hidden sm:inline bg-slate-900/60 px-2 py-0.5 rounded border border-white/5 font-mono">TLS 1.3 / E2EE</span>
-        <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">ساري وصالح</span>
-      </div>
-    `;
-    offlineQuickBadge.classList.add('hidden');
+    if (connectionStatusBar) {
+      connectionStatusBar.className = 'py-2 px-4 rounded-2xl bg-cyan-950/40 border border-cyan-500/20 backdrop-blur-md flex items-center justify-between transition-all';
+      connectionStatusBar.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="relative flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+          </span>
+          <span class="text-xs sm:text-sm font-bold text-cyan-300">السحابة المركزية لـ IDC متصلة وموثقة (Online Synchronized)</span>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-slate-300">
+          <span class="hidden sm:inline bg-slate-900/60 px-2 py-0.5 rounded border border-white/5 font-mono">TLS 1.3 / E2EE</span>
+          <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">ساري وصالح</span>
+        </div>
+      `;
+    }
+    if (offlineQuickBadge) offlineQuickBadge.classList.add('hidden');
   } else {
-    btnOffline.classList.add('active-offline');
-    btnOnline.classList.remove('active-online');
-    sectionOffline.classList.remove('hidden');
-    sectionOnline.classList.add('hidden');
+    if (btnOffline) btnOffline.classList.add('active-offline');
+    if (btnOnline) btnOnline.classList.remove('active-online');
+    if (sectionOffline) sectionOffline.classList.remove('hidden');
+    if (sectionOnline) sectionOnline.classList.add('hidden');
 
-    connectionStatusBar.className = 'py-2 px-4 rounded-2xl orange-subtle-box backdrop-blur-md flex items-center justify-between transition-all';
-    connectionStatusBar.innerHTML = `
-      <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined text-orange-400 text-lg">cloud_off</span>
-        <span class="text-xs sm:text-sm font-bold text-orange-300">الوضع غير المتصل (Offline Mode) - حفظ محلي فوري وآمن بدون إنترنت</span>
-      </div>
-      <div class="flex items-center gap-2 text-xs text-orange-200">
-        <span class="bg-orange-950/80 px-2 py-0.5 rounded border border-orange-500/30 font-bold">ذاكرة محلية 100%</span>
-      </div>
-    `;
-    offlineQuickBadge.classList.remove('hidden');
+    if (connectionStatusBar) {
+      connectionStatusBar.className = 'py-2 px-4 rounded-2xl orange-subtle-box backdrop-blur-md flex items-center justify-between transition-all';
+      connectionStatusBar.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-orange-400 text-lg">cloud_off</span>
+          <span class="text-xs sm:text-sm font-bold text-orange-300">الوضع غير المتصل (Offline Mode) - حفظ محلي فوري وآمن بدون إنترنت</span>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-orange-200">
+          <span class="bg-orange-950/80 px-2 py-0.5 rounded border border-orange-500/30 font-bold">ذاكرة محلية 100%</span>
+        </div>
+      `;
+    }
+    if (offlineQuickBadge) offlineQuickBadge.classList.remove('hidden');
   }
 }
 
@@ -958,6 +1155,8 @@ function updateDataInViews() {
 
 function openOfflineDataEditor() {
   sfx.playBeep();
+  closeSettingsDrawer();
+  closeAccountModal();
   const d = AppState.offlineData;
 
   document.getElementById('editFullName').value = d.fullName;
@@ -1100,11 +1299,11 @@ function toggleMobileFrame() {
   if (AppState.isPhoneFrame) {
     appContainer.classList.add('phone-mode-wrapper');
     notch.classList.remove('hidden');
-    frameBtnText.innerText = 'عرض سطح المكتب';
+    if (frameBtnText) frameBtnText.innerText = 'عرض سطح المكتب';
   } else {
     appContainer.classList.remove('phone-mode-wrapper');
     notch.classList.add('hidden');
-    frameBtnText.innerText = 'وضع الهاتف';
+    if (frameBtnText) frameBtnText.innerText = 'وضع الهاتف';
   }
 }
 
@@ -1130,15 +1329,17 @@ function toggleLanguage() {
   AppState.language = AppState.language === 'ar' ? 'en' : 'ar';
   document.documentElement.lang = AppState.language;
   document.documentElement.dir = AppState.language === 'ar' ? 'rtl' : 'ltr';
-  document.getElementById('langToggleLabel').innerText = AppState.language === 'ar' ? 'English' : 'العربية';
+  const label = document.getElementById('langToggleLabel');
+  if (label) label.innerText = AppState.language === 'ar' ? 'English' : 'العربية';
   showToast(AppState.language === 'ar' ? 'تم تحويل الواجهة إلى العربية' : 'Switched interface to English');
 }
 
 function setupEventListeners() {
-  document.querySelectorAll('.modal-backdrop').forEach(modal => {
+  document.querySelectorAll('.modal-backdrop, .drawer-backdrop').forEach(modal => {
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
         closeModal(modal.id);
+        if (modal.id === 'settingsDrawerModal') closeSettingsDrawer();
       }
     });
   });
