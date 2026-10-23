@@ -18,22 +18,43 @@
             theme: {
                 extend: {
                     colors: {
+                        cyan: {
+                            50: '#e8f0fe',
+                            100: '#d2e3fc',
+                            200: '#aecbfa',
+                            300: '#8ab4f8',
+                            400: '#8ab4f8',
+                            500: '#1a73e8',
+                            600: '#1a73e8',
+                            700: '#1967d2',
+                            800: '#185abc',
+                            900: '#174ea6',
+                            950: '#202124'
+                        },
+                        teal: {
+                            50: '#e6f4ea',
+                            100: '#ceead6',
+                            200: '#a8dab5',
+                            300: '#81c995',
+                            400: '#81c995',
+                            500: '#188038',
+                            600: '#188038',
+                            700: '#137333',
+                            800: '#0d652d',
+                            900: '#0b5324',
+                            950: '#202124'
+                        },
                         idc: {
-                            50: '#f0fdfa',
-                            100: '#ccfbf1',
-                            200: '#99f6e4',
-                            300: '#5eead4',
-                            400: '#2dd4bf',
-                            500: '#14b8a6',
-                            600: '#0d9488',
-                            700: '#0f766e',
-                            800: '#115e59',
-                            900: '#134e4a',
-                            dark: '#001224',
-                            card: '#001e38',
-                            accent: '#06b6d4',
-                            orange: '#ff7700',
-                            gold: '#f59e0b'
+                            bg: '#202124',
+                            surface: '#292a2d',
+                            line: '#3c4043',
+                            blue: '#8ab4f8',
+                            'blue-deep': '#1a73e8',
+                            green: '#81c995',
+                            yellow: '#fdd663',
+                            red: '#f28b82',
+                            text: '#e8eaed',
+                            muted: '#9aa0a6'
                         }
                     },
                     fontFamily: {
@@ -48,13 +69,11 @@
     <!-- Custom Style Sheet -->
     <link rel="stylesheet" href="./style.css">
 </head>
-<body class="bg-[#001224] text-slate-100 font-cairo min-h-screen flex flex-col selection:bg-cyan-500 selection:text-slate-950">
+<body class="bg-[#202124] text-[#e8eaed] font-cairo min-h-screen flex flex-col selection:bg-[#8ab4f8] selection:text-[#202124]">
 
     <!-- Top Ambient Lights (Contained to prevent mobile horizontal expansion) -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-cyan-500/10 via-teal-500/5 to-transparent blur-3xl"></div>
-        <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-teal-600/10 rounded-full blur-3xl"></div>
-        <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl"></div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-blue-500/10 via-transparent to-transparent blur-3xl"></div>
     </div>
 
     <!-- ========================================================================= -->
@@ -63,7 +82,7 @@
     <div id="landingPortal" class="github-style-landing hidden">
         <!-- Top header info -->
         <div class="w-full max-w-sm flex items-center justify-between text-xs text-slate-500 pt-2">
-            <span class="flex items-center gap-1 font-mono text-[11px] text-cyan-400">
+            <span class="flex items-center gap-1 font-mono text-[11px] text-[#8ab4f8]">
                 <span class="material-symbols-outlined text-sm">shield</span>
                 <span>IDC PROTOCOL</span>
             </span>
@@ -73,14 +92,14 @@
         <!-- Center: Minimalist Centered Emblem (Matching GitHub Mobile Logo) -->
         <div class="flex flex-col items-center justify-center my-auto py-8">
             <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl relative mb-6">
-                <div class="absolute inset-0 rounded-3xl bg-cyan-500/10 blur-xl"></div>
+                <div class="absolute inset-0 rounded-3xl bg-[#8ab4f8]/10 blur-xl"></div>
                 <span class="material-symbols-outlined text-7xl sm:text-8xl text-white select-none">shield</span>
             </div>
             <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight text-center">منظومة IDC الرقمية</h1>
             <p class="text-sm text-slate-400 mt-2 text-center max-w-xs leading-relaxed">
                 حفظ وحماية بيانات الأفراد الحساسة والوثائق الرقمية المشفرة
             </p>
-            <span class="text-[11px] text-cyan-400/80 mt-1 font-mono uppercase tracking-wider">Keeping info safe • Nothing more, nothing less</span>
+            <span class="text-[11px] text-[#8ab4f8] mt-1 font-mono uppercase tracking-wider">Keeping info safe • Nothing more, nothing less</span>
         </div>
 
         <!-- Bottom Dual Auth Action Buttons (GitHub Style: Top White, Bottom Dark) -->
@@ -96,7 +115,7 @@
 
             <!-- 2. Secondary Dark Button: Password + QR (للمستخدمين بدون NFC) -->
             <button onclick="openAuthModal('qr')" class="github-secondary-btn">
-                <span class="material-symbols-outlined text-2xl text-cyan-400">qr_code_2</span>
+                <span class="material-symbols-outlined text-2xl text-[#8ab4f8]">qr_code_2</span>
                 <span>الدخول بواسطة Password + QR</span>
             </button>
             <p class="text-center text-[11px] text-slate-400 -mt-1.5 pb-1">
@@ -104,8 +123,8 @@
             </p>
 
             <!-- 3. Quick Demo Access Button (Demo 1 Concept) -->
-            <button onclick="quickDemoLogin()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600/20 to-teal-600/20 hover:from-cyan-600/30 hover:to-teal-600/30 border border-cyan-500/30 text-cyan-200 text-xs font-bold flex items-center justify-center gap-2 transition-all mt-1">
-                <span class="material-symbols-outlined text-base text-cyan-400">bolt</span>
+            <button onclick="quickDemoLogin()" class="w-full py-2.5 px-4 rounded-xl bg-[#8ab4f8]/15 hover:bg-[#8ab4f8]/25 border border-[#8ab4f8]/30 text-[#8ab4f8] text-xs font-bold flex items-center justify-center gap-2 transition-all mt-1">
+                <span class="material-symbols-outlined text-base">bolt</span>
                 <span>المتابعة السريعة (وضع المعاينة الفورية)</span>
             </button>
 
@@ -124,38 +143,38 @@
     <!-- ========================================================================= -->
     <!-- GOOGLE-INSPIRED TOP APP BAR (الواجهة العلوية بنمط تطبيق Google) -->
     <!-- ========================================================================= -->
-    <header class="bg-[#001933]/90 border-b border-cyan-500/20 backdrop-blur-md sticky top-0 z-40 transition-all shadow-xl w-full max-w-full overflow-hidden">
+    <header class="bg-[#202124]/95 border-b border-[#3c4043] backdrop-blur-md sticky top-0 z-40 transition-all shadow-xl w-full max-w-full overflow-hidden">
         <div class="max-w-6xl mx-auto px-2.5 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-1.5 sm:gap-3">
             
             <!-- Left Corner (Google-Style Menu / Settings & Customer Support Drawer Button) -->
             <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
                 <button onclick="openSettingsDrawer()" class="google-nav-btn" title="الإعدادات وخدمة العملاء">
-                    <span class="material-symbols-outlined text-xl sm:text-2xl text-slate-200">menu</span>
+                    <span class="material-symbols-outlined text-xl sm:text-2xl text-[#e8eaed]">menu</span>
                 </button>
 
                 <!-- Brand Name & Logo -->
                 <div class="flex items-center gap-1.5 sm:gap-2.5">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-400 flex items-center justify-center shadow-lg shadow-cyan-500/30 text-slate-950 font-black shrink-0">
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#1a73e8] flex items-center justify-center shadow-lg shadow-[#1a73e8]/30 text-white font-black shrink-0">
                         <span class="material-symbols-outlined text-lg sm:text-xl">shield</span>
                     </div>
                     <div>
                         <div class="flex items-center gap-1">
                             <span class="font-extrabold text-sm sm:text-base text-white tracking-tight">IDC</span>
-                            <span class="text-[9px] bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold px-1.5 py-0.2 rounded-full font-mono">Vault</span>
+                            <span class="text-[9px] bg-[#8ab4f8]/20 text-[#8ab4f8] border border-[#8ab4f8]/30 font-bold px-1.5 py-0.2 rounded-full font-mono">Vault</span>
                         </div>
-                        <p class="text-[10px] text-slate-400 hidden sm:block">حفظ وأمان البيانات • Nothing more nothing less</p>
+                        <p class="text-[10px] text-[#9aa0a6] hidden sm:block">حفظ وأمان البيانات • Nothing more nothing less</p>
                     </div>
                 </div>
             </div>
 
             <!-- Center: Mode Selector Switch (Online vs Offline) -->
-            <div class="flex items-center bg-[#00142b] p-0.5 sm:p-1 rounded-2xl border border-white/10 shadow-inner shrink-0">
+            <div class="flex items-center bg-[#292a2d] p-0.5 sm:p-1 rounded-2xl border border-[#3c4043] shadow-inner shrink-0">
                 <button id="modeBtnOnline" onclick="setAppMode('online')" class="switch-mode-btn active-online px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1 sm:gap-1.5 transition-all">
                     <span class="material-symbols-outlined text-sm sm:text-base">cloud_done</span>
                     <span class="hidden xs:inline">أونلاين</span>
                 </button>
-                <button id="modeBtnOffline" onclick="setAppMode('offline')" class="switch-mode-btn px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1 sm:gap-1.5 text-slate-400 hover:text-white transition-all">
-                    <span class="material-symbols-outlined text-sm sm:text-base text-orange-400">offline_pin</span>
+                <button id="modeBtnOffline" onclick="setAppMode('offline')" class="switch-mode-btn px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1 sm:gap-1.5 text-[#9aa0a6] hover:text-[#e8eaed] transition-all">
+                    <span class="material-symbols-outlined text-sm sm:text-base text-[#fdd663]">offline_pin</span>
                     <span class="hidden xs:inline">أوفلاين</span>
                 </button>
             </div>
@@ -163,12 +182,12 @@
             <!-- Right Corner (Fast Tools + Google-Style Profile Picture Avatar Button) -->
             <div class="flex items-center gap-1 sm:gap-2 shrink-0">
                 <!-- NFC Tap Simulator -->
-                <button onclick="triggerNfcTapSimulation()" class="p-1.5 sm:p-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 flex items-center justify-center transition-all active:scale-95" title="محاكاة لمس NFC">
+                <button onclick="triggerNfcTapSimulation()" class="p-1.5 sm:p-2 rounded-xl bg-[#8ab4f8]/15 hover:bg-[#8ab4f8]/25 text-[#8ab4f8] border border-[#8ab4f8]/30 flex items-center justify-center transition-all active:scale-95" title="محاكاة لمس NFC">
                     <span class="material-symbols-outlined text-base animate-pulse">contactless</span>
                 </button>
 
                 <!-- Fast Lock -->
-                <button onclick="lockApplication()" class="p-1.5 sm:p-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 flex items-center justify-center transition-all" title="قفل المنظومة">
+                <button onclick="lockApplication()" class="p-1.5 sm:p-2 rounded-xl bg-[#fdd663]/15 hover:bg-[#fdd663]/25 text-[#fdd663] border border-[#fdd663]/30 flex items-center justify-center transition-all" title="قفل المنظومة">
                     <span class="material-symbols-outlined text-base">lock</span>
                 </button>
 
@@ -181,7 +200,7 @@
 
         <!-- Dynamic Connection & Status Banner -->
         <div class="max-w-6xl mx-auto px-4 pb-2">
-            <div id="connectionStatusBar" class="py-1.5 px-3.5 rounded-xl bg-cyan-950/40 border border-cyan-500/20 backdrop-blur-md flex items-center justify-between transition-all">
+            <div id="connectionStatusBar" class="py-1.5 px-3.5 rounded-xl bg-[#292a2d] border border-[#3c4043] backdrop-blur-md flex items-center justify-between transition-all">
                 <!-- Populated dynamically via app.js -->
             </div>
         </div>

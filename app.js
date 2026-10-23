@@ -334,26 +334,26 @@ function drawEgyptHeroQr() {
   canvas.width = size;
   canvas.height = size;
 
-  ctx.fillStyle = '#001e38';
+  ctx.fillStyle = '#202124';
   ctx.fillRect(0, 0, size, size);
 
-  ctx.strokeStyle = '#10b981';
+  ctx.strokeStyle = '#3c4043';
   ctx.lineWidth = 2;
   ctx.strokeRect(4, 4, size - 8, size - 8);
 
-  ctx.fillStyle = '#34d399';
   function drawFinder(x, y) {
+    ctx.fillStyle = '#8ab4f8';
     ctx.fillRect(x, y, 36, 36);
-    ctx.fillStyle = '#001e38';
+    ctx.fillStyle = '#202124';
     ctx.fillRect(x + 6, y + 6, 24, 24);
-    ctx.fillStyle = '#34d399';
+    ctx.fillStyle = '#8ab4f8';
     ctx.fillRect(x + 12, y + 12, 12, 12);
   }
   drawFinder(12, 12);
   drawFinder(size - 48, 12);
   drawFinder(12, size - 48);
 
-  ctx.fillStyle = '#6ee7b7';
+  ctx.fillStyle = '#81c995';
   for (let r = 0; r < 12; r++) {
     for (let c = 0; c < 12; c++) {
       if ((r * 3 + c * 7 + (r ^ c)) % 3 === 0) {
@@ -367,7 +367,7 @@ function drawEgyptHeroQr() {
   ctx.beginPath();
   ctx.arc(size / 2, size / 2, 15, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = '#f9d976';
+  ctx.fillStyle = '#fdd663';
   ctx.font = 'bold 9px monospace';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -747,25 +747,25 @@ function setAppMode(newMode) {
     if (sectionOffline) sectionOffline.classList.add('hidden');
 
     if (connectionStatusBar) {
-      connectionStatusBar.className = 'py-2 px-4 rounded-2xl bg-cyan-950/40 border border-cyan-500/20 backdrop-blur-md flex items-center justify-between transition-all';
+      connectionStatusBar.className = 'py-2 px-4 rounded-2xl bg-[#292a2d] border border-[#3c4043] backdrop-blur-md flex items-center justify-between transition-all';
       connectionStatusBar.innerHTML = `
         <div class="flex items-center gap-2">
           <span class="relative flex h-3 w-3">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#81c995] opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-[#188038]"></span>
           </span>
-          <span class="text-xs sm:text-sm font-bold text-cyan-300">السحابة المركزية لـ IDC متصلة وموثقة (Online Synchronized)</span>
+          <span class="text-xs sm:text-sm font-bold text-[#8ab4f8]">السحابة المركزية لـ IDC متصلة وموثقة (Online Synchronized)</span>
         </div>
-        <div class="flex items-center gap-2 text-xs text-slate-300">
-          <span class="hidden sm:inline bg-slate-900/60 px-2 py-0.5 rounded border border-white/5 font-mono">TLS 1.3 / E2EE</span>
-          <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">ساري وصالح</span>
+        <div class="flex items-center gap-2 text-xs text-[#9aa0a6]">
+          <span class="hidden sm:inline bg-[#202124] px-2 py-0.5 rounded border border-[#3c4043] font-mono text-[#e8eaed]">TLS 1.3 / E2EE</span>
+          <span class="px-2 py-0.5 rounded bg-[#81c995]/20 text-[#81c995] font-bold border border-[#81c995]/30">ساري وصالح</span>
         </div>
       `;
     }
     if (egyptCardStatusPill) {
       egyptCardStatusPill.className = 'flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/25 backdrop-blur-sm border border-white/20 text-xs font-bold text-white';
       egyptCardStatusPill.innerHTML = `
-        <span class="material-symbols-outlined text-sm text-emerald-300 animate-pulse">lock</span>
+        <span class="material-symbols-outlined text-sm text-[#81c995] animate-pulse">lock</span>
         <span id="egyptCardStatusTxt">متصل</span>
         <span class="material-symbols-outlined text-sm">wifi</span>
       `;
@@ -778,21 +778,21 @@ function setAppMode(newMode) {
     if (sectionOnline) sectionOnline.classList.add('hidden');
 
     if (connectionStatusBar) {
-      connectionStatusBar.className = 'py-2 px-4 rounded-2xl orange-subtle-box backdrop-blur-md flex items-center justify-between transition-all';
+      connectionStatusBar.className = 'py-2 px-4 rounded-2xl bg-[#292a2d] border border-[#f9ab00]/40 backdrop-blur-md flex items-center justify-between transition-all';
       connectionStatusBar.innerHTML = `
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-orange-400 text-lg">cloud_off</span>
-          <span class="text-xs sm:text-sm font-bold text-orange-300">الوضع غير المتصل (Offline Mode) - حفظ محلي فوري وآمن بدون إنترنت</span>
+          <span class="material-symbols-outlined text-[#fdd663] text-lg">cloud_off</span>
+          <span class="text-xs sm:text-sm font-bold text-[#fdd663]">الوضع غير المتصل (Offline Mode) - حفظ محلي فوري وآمن بدون إنترنت</span>
         </div>
-        <div class="flex items-center gap-2 text-xs text-orange-200">
-          <span class="bg-orange-950/80 px-2 py-0.5 rounded border border-orange-500/30 font-bold">ذاكرة محلية 100%</span>
+        <div class="flex items-center gap-2 text-xs text-[#fdd663]">
+          <span class="bg-[#202124] px-2 py-0.5 rounded border border-[#f9ab00]/30 font-bold">ذاكرة محلية 100%</span>
         </div>
       `;
     }
     if (egyptCardStatusPill) {
-      egyptCardStatusPill.className = 'flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-950/70 border border-orange-500/40 text-xs font-bold text-orange-200';
+      egyptCardStatusPill.className = 'flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f9ab00]/20 border border-[#f9ab00]/40 text-xs font-bold text-[#fdd663]';
       egyptCardStatusPill.innerHTML = `
-        <span class="material-symbols-outlined text-sm text-orange-400">cloud_off</span>
+        <span class="material-symbols-outlined text-sm text-[#fdd663]">cloud_off</span>
         <span id="egyptCardStatusTxt">أوفلاين محلي</span>
       `;
     }
@@ -814,13 +814,13 @@ function switchOnlineTab(tabKey) {
     const btn = document.getElementById(`tabBtn-${t}`);
     const content = document.getElementById(`onlineTab-${t}`);
     if (t === tabKey) {
-      if (btn) btn.className = 'flex-1 min-w-[120px] py-3 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-lg shadow-cyan-600/30';
+      if (btn) btn.className = 'flex-1 min-w-[120px] py-3 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all bg-[#1a73e8] text-white shadow-md shadow-[#1a73e8]/30';
       if (content) {
         content.classList.remove('hidden');
         content.classList.add('flex');
       }
     } else {
-      if (btn) btn.className = 'flex-1 min-w-[120px] py-3 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all text-slate-300 hover:text-white hover:bg-slate-800/60';
+      if (btn) btn.className = 'flex-1 min-w-[120px] py-3 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all text-[#9aa0a6] hover:text-[#e8eaed] hover:bg-[#35393d]';
       if (content) {
         content.classList.add('hidden');
         content.classList.remove('flex');
