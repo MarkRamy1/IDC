@@ -1,1700 +1,243 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منظومة IDC لحماية وأمان البيانات | IDC - Keeping Info Safe</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Google Material Symbols -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        cyan: {
-                            50: '#e8f0fe',
-                            100: '#d2e3fc',
-                            200: '#aecbfa',
-                            300: '#8ab4f8',
-                            400: '#8ab4f8',
-                            500: '#1a73e8',
-                            600: '#1a73e8',
-                            700: '#1967d2',
-                            800: '#185abc',
-                            900: '#174ea6',
-                            950: '#202124'
-                        },
-                        teal: {
-                            50: '#e6f4ea',
-                            100: '#ceead6',
-                            200: '#a8dab5',
-                            300: '#81c995',
-                            400: '#81c995',
-                            500: '#188038',
-                            600: '#188038',
-                            700: '#137333',
-                            800: '#0d652d',
-                            900: '#0b5324',
-                            950: '#202124'
-                        },
-                        idc: {
-                            bg: '#202124',
-                            surface: '#292a2d',
-                            line: '#3c4043',
-                            blue: '#8ab4f8',
-                            'blue-deep': '#1a73e8',
-                            green: '#81c995',
-                            yellow: '#fdd663',
-                            red: '#f28b82',
-                            text: '#e8eaed',
-                            muted: '#9aa0a6'
-                        }
-                    },
-                    fontFamily: {
-                        cairo: ['Cairo', 'sans-serif'],
-                        sans: ['Plus Jakarta Sans', 'Cairo', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace']
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Custom Style Sheet -->
-    <link rel="stylesheet" href="./style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#202124">
+<title>منظومة IDC للهوية الرقمية والخزنة المشفرة</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg">
+<link rel="apple-touch-icon" href="icons/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+<style>
+/* Embedded IDC Master Design System (Ensures 100% styling on any host / no 404s) */
+:root {
+  --bg: #202124;
+  --sf: #292a2d;
+  --cd: #2d3135;
+  --ln: #3c4043;
+  --tx: #e8eaed;
+  --mu: #9aa0a6;
+  --bl: #8ab4f8;
+  --bl-deep: #1a73e8;
+  --rd: #f28b82;
+  --yl: #fdd663;
+  --gn: #81c995;
+  --btx: #202124;
+  --bwb: #1b1c1e;
+  --bwf: #e8eaed;
+  --gold: #d4af37;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); background-color: var(--bg); }
+body {
+  margin: 0;
+  font: 400 14px/1.6 'Cairo', 'Plus Jakarta Sans', Arial, sans-serif;
+  color: var(--tx);
+  background:
+    radial-gradient(600px 400px at 50% -10%, rgba(138, 180, 248, 0.12), transparent),
+    radial-gradient(500px 300px at 100% 50%, rgba(129, 201, 149, 0.05), transparent),
+    var(--bg);
+  background-attachment: fixed;
+  min-height: 100vh;
+  padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
+  display: flex;
+  flex-direction: column;
+}
+#app {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px 16px 120px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+h1, h2, h3 { margin: 0; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+h2 { font-size: 22px; margin-bottom: 6px; }
+h3 { font-size: 17px; margin-bottom: 4px; }
+.mi {
+  font-family: "Material Icons";
+  font-style: normal;
+  font-size: 22px;
+  line-height: 1;
+  direction: ltr;
+  display: inline-block;
+  vertical-align: middle;
+}
+.c { text-align: center; }
+.mu { color: var(--mu); }
+.sm { font-size: 12px; }
+.err {
+  color: var(--rd);
+  font-size: 13px;
+  font-weight: 600;
+  min-height: 20px;
+  margin: 8px 0;
+  text-align: center;
+  transition: all 0.2s;
+}
+.wm {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  text-align: center;
+  direction: ltr;
+  background: linear-gradient(135deg, #8ab4f8 0%, #c2e7ff 50%, #81c995 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+  display: inline-block;
+  width: 100%;
+}
+.card, .ac {
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  border-radius: 24px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ac {
+  padding: 32px 24px 28px;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+.card:hover { border-color: rgba(138, 180, 248, 0.3); }
+.f { position: relative; margin: 20px 0 6px; }
+.f input, select {
+  width: 100%;
+  padding: 16px 16px;
+  border: 1.5px solid var(--ln);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--tx);
+  font: 500 15px 'Cairo', sans-serif;
+  outline: 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+select { margin-top: 6px; background: var(--sf); cursor: pointer; }
+.f input:focus, select:focus {
+  border-color: var(--bl);
+  background: rgba(138, 180, 248, 0.04);
+  box-shadow: 0 0 0 4px rgba(138, 180, 248, 0.15);
+}
+.f label {
+  position: absolute;
+  top: 50%;
+  inset-inline-start: 14px;
+  transform: translateY(-50%);
+  background: var(--sf);
+  padding: 0 6px;
+  color: var(--mu);
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.18s ease;
+  pointer-events: none;
+  border-radius: 4px;
+}
+.f input:focus + label,
+.f input:not(:placeholder-shown) + label,
+.f label.up {
+  top: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--bl);
+}
+.sl { font-size: 12px; font-weight: 600; color: var(--mu); margin-top: 14px; margin-bottom: 2px; }
+.bt {
+  border: 0;
+  border-radius: 14px;
+  height: 46px;
+  padding: 0 24px;
+  background: linear-gradient(135deg, #8ab4f8, #669df6);
+  color: #202124;
+  font: 700 15px 'Cairo', sans-serif;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(138, 180, 248, 0.25);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bt:hover { filter: brightness(1.08); box-shadow: 0 6px 20px rgba(138, 180, 248, 0.35); transform: translateY(-1px); }
+.bt:active { transform: scale(0.97); }
+.bt.w { width: 100%; margin-top: 16px; }
+.bt.o { background: rgba(255, 255, 255, 0.05); border: 1.5px solid var(--ln); color: var(--bl); box-shadow: none; }
+.bt.o:hover { background: rgba(138, 180, 248, 0.1); border-color: var(--bl); }
+.bt.t { background: transparent; color: var(--bl); box-shadow: none; padding: 0 8px; height: auto; font-size: 13px; margin-top: 6px; }
+.bt.t:hover { text-decoration: underline; transform: none; }
+.bt.d { background: rgba(242, 139, 130, 0.1); border: 1.5px solid rgba(242, 139, 130, 0.3); color: var(--rd); box-shadow: none; }
+.bt.d:hover { background: rgba(242, 139, 130, 0.2); border-color: var(--rd); }
+.ib { background: none; border: 0; color: var(--mu); cursor: pointer; padding: 8px; border-radius: 50%; display: inline-grid; place-items: center; transition: all 0.15s; }
+.ib:hover { color: var(--tx); background: rgba(255, 255, 255, 0.08); }
+.bar { display: flex; align-items: center; gap: 12px; padding: 8px 0 16px; }
+.bar .wm { font-size: 26px; width: auto; margin: 0; }
+.sp { flex: 1; }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--ln); background: rgba(255, 255, 255, 0.03); border-radius: 99px; padding: 4px 12px; font-size: 12px; font-weight: 600; color: var(--mu); }
+.chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--mu); }
+.chip.ok { color: var(--gn); border-color: rgba(129, 201, 149, 0.3); }
+.chip.ok i { background: var(--gn); box-shadow: 0 0 8px var(--gn); }
+.av { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--bl), #1a73e8) center/cover; color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 16px; cursor: pointer; border: 2px solid rgba(255, 255, 255, 0.2); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); }
+.nv { position: fixed; bottom: 0; inset-inline: 0; display: flex; justify-content: center; gap: 8px; padding: 8px 16px calc(12px + env(safe-area-inset-bottom, 0px)); background: rgba(32, 33, 36, 0.85); backdrop-filter: blur(20px); border-top: 1px solid var(--ln); z-index: 20; }
+.nv button { flex: 1; max-width: 100px; border: 0; background: none; color: var(--mu); font: 600 11px 'Cairo', sans-serif; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 4px; border-radius: 16px; cursor: pointer; transition: all 0.2s; }
+.nv button.on { background: rgba(138, 180, 248, 0.15); color: var(--bl); }
+.tabs { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
+.tabs button { border: 1px solid var(--ln); border-radius: 99px; padding: 8px 20px; background: var(--sf); color: var(--mu); font: 600 13px 'Cairo', sans-serif; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+.tabs button.on { background: var(--bl); color: #202124; border-color: var(--bl); box-shadow: 0 2px 10px rgba(138, 180, 248, 0.3); }
+.it { display: flex; gap: 14px; align-items: center; }
+.ic { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; flex: none; background: color-mix(in srgb, var(--c, var(--bl)) 16%, transparent); color: var(--c, var(--bl)); border: 1px solid color-mix(in srgb, var(--c, var(--bl)) 30%, transparent); }
+.g { flex: 1; min-width: 0; }
+.tag { display: inline-block; border: 1px solid var(--ln); border-radius: 8px; font-size: 11px; font-weight: 600; padding: 2px 8px; margin: 6px 4px 0 0; color: var(--mu); }
+.tag.ok { color: var(--gn); border-color: rgba(129, 201, 149, 0.3); background: rgba(129, 201, 149, 0.08); }
+.tag.wn { color: var(--yl); border-color: rgba(253, 214, 99, 0.3); background: rgba(253, 214, 99, 0.08); }
+.rw { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--ln); }
+.rw:first-child { border-top: 0; }
+details { background: var(--sf); border: 1px solid var(--ln); border-radius: 20px; margin-bottom: 12px; overflow: hidden; }
+summary { cursor: pointer; font-weight: 700; padding: 16px; list-style: none; display: flex; align-items: center; gap: 12px; transition: background 0.15s; }
+summary:hover { background: rgba(255, 255, 255, 0.02); }
+summary::-webkit-details-marker { display: none; }
+details[open] > summary { border-bottom: 1px solid var(--ln); }
+details > div { padding: 16px; animation: fadeIn 0.25s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } }
+.bw { background: linear-gradient(135deg, #1f2023, #151618); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 22px; display: flex; align-items: center; gap: 18px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); }
+.idc { perspective: 1200px; height: 225px; margin: 14px 0 10px; cursor: pointer; }
+.idi { position: relative; height: 100%; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); transform-style: preserve-3d; }
+.idc.fp .idi { transform: rotateY(180deg); }
+.fc { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 24px; padding: 20px; color: #fff; overflow: hidden; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.15); }
+.fr { background: linear-gradient(135deg, #17376c 0%, #1e4b8a 50%, #185a66 100%); }
+.bk { background: linear-gradient(135deg, #10213d 0%, #17376c 100%); transform: rotateY(180deg); }
+.row2 { display: flex; justify-content: space-between; align-items: center; }
+.pill { font-size: 11px; font-weight: 700; background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.2); padding: 4px 12px; border-radius: 99px; color: #c2e7ff; }
+.who { display: flex; gap: 14px; align-items: center; margin-top: 14px; }
+.avimg, .avph { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2.5px solid rgba(255, 255, 255, 0.6); background: rgba(255, 255, 255, 0.15); display: grid; place-items: center; font-size: 26px; font-weight: 800; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3); }
+.nm { font-size: 20px; font-weight: 800; line-height: 1.25; }
+.sub { opacity: 0.85; font-size: 13px; margin-top: 2px; }
+.bot { position: absolute; inset-inline: 20px; bottom: 18px; display: flex; justify-content: space-between; align-items: flex-end; }
+.bot small { font-size: 10px; opacity: 0.75; display: block; }
+.nid { letter-spacing: 2.5px; font-family: monospace; font-size: 15px; font-weight: 700; color: #c2e7ff; }
+.qr { width: 58px; height: 58px; background: #fff; padding: 4px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); }
+.ln { display: flex; gap: 8px; align-items: center; margin: 10px 0; font-size: 13px; word-break: break-all; }
+.att { display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--ln); border-radius: 12px; padding: 8px 12px; margin-top: 10px; }
+.ov { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); display: flex; align-items: flex-end; justify-content: center; z-index: 50; animation: fadeIn 0.2s ease; }
+.ov > div { background: var(--sf); border: 1px solid var(--ln); width: 100%; max-width: 480px; border-radius: 28px 28px 0 0; padding: 24px 20px calc(24px + env(safe-area-inset-bottom, 0px)); max-height: 90vh; overflow-y: auto; box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5); animation: slideUp 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.toast { position: fixed; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); inset-inline: 0; margin: auto; width: max-content; max-width: 90%; background: #323639; color: #fff; border: 1px solid var(--ln); padding: 12px 22px; border-radius: 14px; font-size: 13px; font-weight: 600; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); z-index: 100; animation: toastIn 0.2s ease; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.lock { min-height: 70vh; display: grid; place-content: center; }
+.lock .ac { margin: 0; }
+</style>
 </head>
-<body class="bg-[#202124] text-[#e8eaed] font-cairo min-h-screen flex flex-col selection:bg-[#8ab4f8] selection:text-[#202124]">
-
-    <!-- Top Ambient Lights (Contained to prevent mobile horizontal expansion) -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-blue-500/10 via-transparent to-transparent blur-3xl"></div>
-    </div>
-
-    <!-- ========================================================================= -->
-    <!-- 1. GITHUB MOBILE STYLE LANDING & ENTRY PORTAL (شاشة البداية النظيفة باللون الأسود) -->
-    <!-- ========================================================================= -->
-    <div id="landingPortal" class="github-style-landing hidden">
-        <!-- Top header info -->
-        <div class="w-full max-w-sm flex items-center justify-between text-xs text-slate-500 pt-2">
-            <span class="flex items-center gap-1 font-mono text-[11px] text-[#8ab4f8]">
-                <span class="material-symbols-outlined text-sm">shield</span>
-                <span>IDC PROTOCOL</span>
-            </span>
-            <span class="text-[11px] text-slate-500 font-mono">E2EE • Safe Vault</span>
-        </div>
-
-        <!-- Center: Minimalist Centered Emblem (Matching GitHub Mobile Logo) -->
-        <div class="flex flex-col items-center justify-center my-auto py-8">
-            <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl relative mb-6">
-                <div class="absolute inset-0 rounded-3xl bg-[#8ab4f8]/10 blur-xl"></div>
-                <span class="material-symbols-outlined text-7xl sm:text-8xl text-white select-none">shield</span>
-            </div>
-            <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight text-center">منظومة IDC الرقمية</h1>
-            <p class="text-sm text-slate-400 mt-2 text-center max-w-xs leading-relaxed">
-                حفظ وحماية بيانات الأفراد الحساسة والوثائق الرقمية المشفرة
-            </p>
-            <span class="text-[11px] text-[#8ab4f8] mt-1 font-mono uppercase tracking-wider">Keeping info safe • Nothing more, nothing less</span>
-        </div>
-
-        <!-- Bottom Dual Auth Action Buttons (GitHub Style: Top White, Bottom Dark) -->
-        <div class="w-full max-w-sm space-y-3.5 pb-4">
-            <!-- 1. Primary White Button: Password + NFC -->
-            <button onclick="openAuthModal('nfc')" class="github-main-btn">
-                <span class="material-symbols-outlined text-2xl text-slate-900">contactless</span>
-                <span class="text-slate-950 font-black">الدخول بواسطة Password + NFC</span>
-            </button>
-            <p class="text-center text-[11px] text-slate-400 -mt-1.5 pb-1">
-                استخدم شريحة NFC المعتمدة وكلمة المرور للدخول المباشر
-            </p>
-
-            <!-- 2. Secondary Dark Button: Password + QR (للمستخدمين بدون NFC) -->
-            <button onclick="openAuthModal('qr')" class="github-secondary-btn">
-                <span class="material-symbols-outlined text-2xl text-[#8ab4f8]">qr_code_2</span>
-                <span>الدخول بواسطة Password + QR</span>
-            </button>
-            <p class="text-center text-[11px] text-slate-400 -mt-1.5 pb-1">
-                لو معندكش شريحة NFC: استخدم الرمز الرقمي المعتمد وكلمة المرور
-            </p>
-
-            <!-- 3. Quick Demo Access Button (Demo 1 Concept) -->
-            <button onclick="quickDemoLogin()" class="w-full py-2.5 px-4 rounded-xl bg-[#8ab4f8]/15 hover:bg-[#8ab4f8]/25 border border-[#8ab4f8]/30 text-[#8ab4f8] text-xs font-bold flex items-center justify-center gap-2 transition-all mt-1">
-                <span class="material-symbols-outlined text-base">bolt</span>
-                <span>المتابعة السريعة (وضع المعاينة الفورية)</span>
-            </button>
-
-            <!-- 4. Real App Link (Works Local & Cloud) -->
-            <a href="./idc-app/web/" class="w-full py-2.5 px-4 rounded-xl bg-[#81c995]/20 hover:bg-[#81c995]/30 border border-[#81c995]/40 text-[#81c995] text-xs font-bold flex items-center justify-center gap-2 transition-all mt-1 no-underline shadow-lg shadow-green-950/20">
-                <span class="material-symbols-outlined text-base">verified_user</span>
-                <span>فتح منظومة IDC الحقيقية (الهوية الرقمية والخزنة)</span>
-            </a>
-
-            <!-- Footer Legal & Customer Support Links -->
-            <div class="pt-6 border-t border-white/10 text-center space-y-2">
-                <p class="text-[11px] text-slate-500">
-                    بالتسجيل فإنك توافق على <a href="javascript:void(0)" onclick="showToast('معايير الحماية IDC: تشفير محلي E2EE وحماية بيومترية كاملة')" class="text-cyan-400 underline">شروط الخصوصية والأمان</a>
-                </p>
-                <button onclick="openCustomerServiceModal()" class="text-xs text-slate-400 hover:text-cyan-300 font-bold transition-colors">
-                    هل تحتاج مساعدة؟ تواصل مع خدمة العملاء
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========================================================================= -->
-    <!-- GOOGLE-INSPIRED TOP APP BAR (الواجهة العلوية بنمط تطبيق Google) -->
-    <!-- ========================================================================= -->
-    <header class="bg-[#202124]/95 border-b border-[#3c4043] backdrop-blur-md sticky top-0 z-40 transition-all shadow-xl w-full max-w-full overflow-hidden">
-        <div class="max-w-6xl mx-auto px-2.5 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-1.5 sm:gap-3">
-            
-            <!-- Left Corner (Google-Style Menu / Settings & Customer Support Drawer Button) -->
-            <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
-                <button onclick="openSettingsDrawer()" class="google-nav-btn" title="الإعدادات وخدمة العملاء">
-                    <span class="material-symbols-outlined text-xl sm:text-2xl text-[#e8eaed]">menu</span>
-                </button>
-
-                <!-- Brand Name & Logo -->
-                <div class="flex items-center gap-1.5 sm:gap-2.5">
-                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#1a73e8] flex items-center justify-center shadow-lg shadow-[#1a73e8]/30 text-white font-black shrink-0">
-                        <span class="material-symbols-outlined text-lg sm:text-xl">shield</span>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-1">
-                            <span class="font-extrabold text-sm sm:text-base text-white tracking-tight">IDC</span>
-                            <span class="text-[9px] bg-[#8ab4f8]/20 text-[#8ab4f8] border border-[#8ab4f8]/30 font-bold px-1.5 py-0.2 rounded-full font-mono">Vault</span>
-                        </div>
-                        <p class="text-[10px] text-[#9aa0a6] hidden sm:block">حفظ وأمان البيانات • Nothing more nothing less</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Center: Mode Selector Switch (Online vs Offline) -->
-            <div class="flex items-center bg-[#292a2d] p-0.5 sm:p-1 rounded-2xl border border-[#3c4043] shadow-inner shrink-0">
-                <button id="modeBtnOnline" onclick="setAppMode('online')" class="switch-mode-btn active-online px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1 sm:gap-1.5 transition-all">
-                    <span class="material-symbols-outlined text-sm sm:text-base">cloud_done</span>
-                    <span class="hidden xs:inline">أونلاين</span>
-                </button>
-                <button id="modeBtnOffline" onclick="setAppMode('offline')" class="switch-mode-btn px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1 sm:gap-1.5 text-[#9aa0a6] hover:text-[#e8eaed] transition-all">
-                    <span class="material-symbols-outlined text-sm sm:text-base text-[#fdd663]">offline_pin</span>
-                    <span class="hidden xs:inline">أوفلاين</span>
-                </button>
-            </div>
-
-            <!-- Right Corner (Fast Tools + Google-Style Profile Picture Avatar Button) -->
-            <div class="flex items-center gap-1 sm:gap-2 shrink-0">
-                <!-- NFC Tap Simulator -->
-                <button onclick="triggerNfcTapSimulation()" class="p-1.5 sm:p-2 rounded-xl bg-[#8ab4f8]/15 hover:bg-[#8ab4f8]/25 text-[#8ab4f8] border border-[#8ab4f8]/30 flex items-center justify-center transition-all active:scale-95" title="محاكاة لمس NFC">
-                    <span class="material-symbols-outlined text-base animate-pulse">contactless</span>
-                </button>
-
-                <!-- Fast Lock -->
-                <button onclick="lockApplication()" class="p-1.5 sm:p-2 rounded-xl bg-[#fdd663]/15 hover:bg-[#fdd663]/25 text-[#fdd663] border border-[#fdd663]/30 flex items-center justify-center transition-all" title="قفل المنظومة">
-                    <span class="material-symbols-outlined text-base">lock</span>
-                </button>
-
-                <!-- Google-Style Profile Picture Avatar -->
-                <button onclick="openAccountModal()" class="google-avatar-btn" title="الحساب الشخصي وبيانات الهوية">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" alt="Identity Holder" class="w-full h-full object-cover">
-                </button>
-            </div>
-        </div>
-
-        <!-- Dynamic Connection & Status Banner -->
-        <div class="max-w-6xl mx-auto px-4 pb-2">
-            <div id="connectionStatusBar" class="py-1.5 px-3.5 rounded-xl bg-[#292a2d] border border-[#3c4043] backdrop-blur-md flex items-center justify-between transition-all">
-                <!-- Populated dynamically via app.js -->
-            </div>
-        </div>
-    </header>
-
-    <!-- MAIN VIEWPORT WRAPPER -->
-    <div id="appViewportWrapper" class="w-full flex-1 flex flex-col items-center justify-start py-3 sm:py-8 px-2 sm:px-4 transition-all duration-300 overflow-x-hidden min-w-0 max-w-full">
-        
-        <main id="appContainer" class="w-full max-w-4xl flex flex-col gap-5 sm:gap-6 transition-all duration-300 min-w-0 mx-auto">
-
-            <!-- Simulated Phone Notch -->
-            <div id="phoneTopNotch" class="phone-notch hidden">
-                <div class="w-3 h-3 rounded-full bg-slate-900 border border-slate-700"></div>
-                <div class="w-12 h-1.5 rounded-full bg-slate-800"></div>
-            </div>
-
-            <!-- ========================================================================= -->
-            <!-- EGYPT DIGITAL IDENTITY HERO CARD (مطابق تماماً للديمو الأول والصورة المرفقة) -->
-            <!-- ========================================================================= -->
-            <section class="egypt-id-card mb-2 w-full max-w-full min-w-0 overflow-hidden">
-                <!-- 1. Top Green Banner (From Screenshot) -->
-                <div class="egypt-card-header">
-                    <div class="flex items-center justify-between gap-1.5 sm:gap-3 mb-2">
-                        <!-- Left Status Pill -->
-                        <div id="egyptCardStatusPill" class="flex items-center gap-1 sm:gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-black/25 backdrop-blur-sm border border-white/20 text-[11px] sm:text-xs font-bold text-white shrink-0">
-                            <span class="material-symbols-outlined text-xs sm:text-sm text-emerald-300 animate-pulse">lock</span>
-                            <span id="egyptCardStatusTxt">متصل</span>
-                            <span class="material-symbols-outlined text-xs sm:text-sm">wifi</span>
-                        </div>
-
-                        <!-- Right Gov Authority -->
-                        <div class="flex items-center gap-1 sm:gap-2 text-right shrink-0">
-                            <span class="text-[11px] sm:text-sm font-extrabold tracking-tight text-white/95">قطاع الأحوال المدنية • منظومة IDC</span>
-                            <span class="material-symbols-outlined text-base sm:text-xl text-amber-300">account_balance</span>
-                        </div>
-                    </div>
-
-                    <!-- Title & Golden Circular EG Badge -->
-                    <div class="flex items-center justify-between gap-2 sm:gap-4 pt-1">
-                        <div class="min-w-0">
-                            <h2 class="text-lg sm:text-2xl font-black tracking-tight text-white">الهوية الوطنية الرقمية</h2>
-                            <span class="text-[9px] sm:text-xs text-emerald-100 font-mono tracking-wider sm:tracking-widest uppercase font-bold block">EGYPT DIGITAL IDENTITY CARD</span>
-                        </div>
-                        <div class="egypt-eg-badge shrink-0" title="جمهورية مصر العربية - وثيقة رقمية موثقة">
-                            <span>EG</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. White Sub-tabs Strip (رمز الـ QR | البطاقة | المحفظة) -->
-                <nav class="egypt-subtabs w-full max-w-full min-w-0">
-                    <!-- Tab 1: QR -->
-                    <button id="egyptTabBtn-qr" onclick="switchEgyptCardTab('qr')" class="egypt-subtab-btn">
-                        <span class="material-symbols-outlined text-base sm:text-lg">qr_code_2</span>
-                        <span>رمز الـ QR</span>
-                    </button>
-
-                    <!-- Tab 2: البطاقة (Active by default) -->
-                    <button id="egyptTabBtn-card" onclick="switchEgyptCardTab('card')" class="egypt-subtab-btn active-subtab">
-                        <span class="material-symbols-outlined text-base sm:text-lg">credit_card</span>
-                        <span>البطاقة</span>
-                    </button>
-
-                    <!-- Tab 3: المحفظة -->
-                    <button id="egyptTabBtn-wallet" onclick="switchEgyptCardTab('wallet')" class="egypt-subtab-btn">
-                        <span class="material-symbols-outlined text-base sm:text-lg">folder_shared</span>
-                        <span>المحفظة</span>
-                    </button>
-                </nav>
-
-                <!-- 3. Sub-views Body -->
-                <!-- VIEW A: THE CARD VIEW (البطاقة) -->
-                <div id="egyptCardView-card" class="egypt-card-body overflow-hidden">
-                    <!-- Security Watermark -->
-                    <div class="absolute -left-10 -bottom-10 opacity-5 pointer-events-none select-none">
-                        <span class="material-symbols-outlined text-[200px] text-cyan-400">shield</span>
-                    </div>
-
-                    <div class="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5 relative z-10">
-                        <!-- Profile Avatar & Details -->
-                        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-start">
-                            <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-2 border-cyan-400/40 shadow-xl bg-slate-800 relative shrink-0">
-                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop" alt="Identity Holder" class="w-full h-full object-cover">
-                                <div class="absolute bottom-1 right-1 bg-cyan-500 text-slate-950 rounded-md p-0.5">
-                                    <span class="material-symbols-outlined text-xs font-bold block">verified</span>
-                                </div>
-                            </div>
-
-                            <div class="space-y-1.5">
-                                <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                                    <h3 class="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-1.5">
-                                        <span class="bind-full-name">أحمد إبراهيم المنشاوي</span>
-                                        <span class="material-symbols-outlined text-cyan-400 text-xl" title="موثق رسميًا">verified</span>
-                                    </h3>
-                                </div>
-                                <p class="text-cyan-300 font-semibold text-xs sm:text-sm bind-job-title">مهندس نظم أمن المعلومات وحماية البيانات</p>
-
-                                <!-- Masked Number Strip (from screenshot: 5678 •••• •••• 2980) -->
-                                <div class="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-3">
-                                    <div class="masked-number-strip">
-                                        <button onclick="toggleMaskedCardNumber()" class="text-slate-400 hover:text-cyan-300 transition-colors p-0.5" title="كشف / إخفاء رقم البطاقة">
-                                            <span id="maskedNumberEyeIcon" class="material-symbols-outlined text-base">visibility</span>
-                                        </button>
-                                        <span id="maskedCardNumberDisplay" class="font-mono text-cyan-200 font-bold text-sm tracking-wider">5678 •••• •••• 2980</span>
-                                    </div>
-                                    <span class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] font-bold">
-                                        سارية حتى 2030
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Right Side: Hologram Chip (NAT-WID from screenshot) & Security Badge -->
-                        <div class="flex flex-col items-center sm:items-end gap-3 shrink-0">
-                            <!-- Holographic Chip -->
-                            <div class="hologram-chip" title="شريحة الهوية الذكية NAT-WID المشفرة">
-                                <span class="material-symbols-outlined text-xs text-amber-900 select-none">memory</span>
-                                <span class="hologram-chip-txt">NAT-WID</span>
-                            </div>
-                            <span class="text-[10px] text-slate-400 font-mono">UID: IDC-SEC-9942</span>
-                        </div>
-                    </div>
-
-                    <!-- Clean Quick Actions Toolbar -->
-                    <div class="mt-5 pt-4 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                        <button onclick="showToast('تم حفظ بطاقة الهوية الرقمية (vCard) في هاتفك بنجاح')" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/30 text-cyan-300 font-bold transition-all active:scale-95">
-                            <span class="material-symbols-outlined text-base">save_alt</span>
-                            <span>حفظ بالهاتف</span>
-                        </button>
-                        <button onclick="switchEgyptCardTab('qr')" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-white/10 text-slate-200 font-bold transition-all active:scale-95">
-                            <span class="material-symbols-outlined text-base">qr_code_2</span>
-                            <span>عرض QR</span>
-                        </button>
-                        <button onclick="lockApplication()" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold transition-all active:scale-95">
-                            <span class="material-symbols-outlined text-base">lock</span>
-                            <span>قفل المنظومة</span>
-                        </button>
-                        <button onclick="openOfflineDataEditor()" class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-teal-600/20 hover:bg-teal-600/30 border border-teal-500/30 text-teal-300 font-bold transition-all active:scale-95">
-                            <span class="material-symbols-outlined text-base">edit_note</span>
-                            <span>تعديل البيانات</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- VIEW B: THE QR VIEW (رمز الـ QR) -->
-                <div id="egyptCardView-qr" class="egypt-card-body hidden text-center py-6">
-                    <div class="max-w-xs mx-auto space-y-3">
-                        <div class="p-3 bg-white rounded-2xl shadow-2xl inline-block">
-                            <canvas id="egyptHeroQrCanvas" width="160" height="160"></canvas>
-                        </div>
-                        <h4 class="text-base font-bold text-white">رمز QR الموثق لـ IDC</h4>
-                        <p class="text-xs text-slate-300">امسح الرمز للتحقق الفوري من الهوية والبيانات المشفرة دون الحاجة لشبكة إنترنت</p>
-                        <div class="pt-2 flex justify-center gap-2">
-                            <button onclick="triggerNfcTapSimulation()" class="py-2 px-3.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold flex items-center gap-1.5 transition-all">
-                                <span class="material-symbols-outlined text-sm">contactless</span>
-                                <span>محاكاة لمس NFC</span>
-                            </button>
-                            <button onclick="switchEgyptCardTab('card')" class="py-2 px-3.5 rounded-xl bg-slate-800 text-slate-200 text-xs font-bold hover:bg-slate-700 transition-all">
-                                العودة للبطاقة
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- VIEW C: THE WALLET VIEW (المحفظة) -->
-                <div id="egyptCardView-wallet" class="egypt-card-body hidden py-5">
-                    <div class="flex items-center justify-between mb-3">
-                        <h4 class="text-sm font-bold text-white flex items-center gap-2">
-                            <span class="material-symbols-outlined text-emerald-400">folder_shared</span>
-                            <span>محفظة الوثائق والشهادات الرقمية</span>
-                        </h4>
-                        <button onclick="switchOnlineTab('certificates')" class="text-xs text-cyan-300 hover:underline flex items-center gap-1 font-bold">
-                            <span>عرض وتعديل كلمات المرور</span>
-                            <span class="material-symbols-outlined text-xs">arrow_forward</span>
-                        </button>
-                    </div>
-
-                    <!-- Mini Wallet Grid -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-                        <div class="p-3 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between">
-                            <div class="flex items-center gap-2.5">
-                                <span class="material-symbols-outlined text-cyan-400 text-xl">badge</span>
-                                <div>
-                                    <span class="font-bold text-white block">بطاقة الرقم القومي</span>
-                                    <span class="text-[10px] text-slate-400 font-mono">CIVIL-ID-29509180</span>
-                                </div>
-                            </div>
-                            <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">سارية</span>
-                        </div>
-
-                        <div class="p-3 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between">
-                            <div class="flex items-center gap-2.5">
-                                <span class="material-symbols-outlined text-amber-400 text-xl">directions_car</span>
-                                <div>
-                                    <span class="font-bold text-white block">رخصة القيادة الذكية</span>
-                                    <span class="text-[10px] text-slate-400 font-mono">TRAFFIC-DL-88410</span>
-                                </div>
-                            </div>
-                            <span class="text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">محمية برمز</span>
-                        </div>
-
-                        <div class="p-3 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between">
-                            <div class="flex items-center gap-2.5">
-                                <span class="material-symbols-outlined text-teal-400 text-xl">school</span>
-                                <div>
-                                    <span class="font-bold text-white block">شهادة ISO 27001</span>
-                                    <span class="text-[10px] text-slate-400 font-mono">INFOSEC-ISO-9901</span>
-                                </div>
-                            </div>
-                            <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">معتمدة</span>
-                        </div>
-
-                        <div class="p-3 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between">
-                            <div class="flex items-center gap-2.5">
-                                <span class="material-symbols-outlined text-rose-400 text-xl">health_and_safety</span>
-                                <div>
-                                    <span class="font-bold text-white block">التأمين الصحي الشامل</span>
-                                    <span class="text-[10px] text-slate-400 font-mono">UHI-GOLD-4421</span>
-                                </div>
-                            </div>
-                            <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">نشطة</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-
-            <!-- ========================================================================= -->
-            <!-- SECTION 1: ONLINE MODE (القسم الأونلاين - متصل بالسحابة) -->
-            <!-- ========================================================================= -->
-            <div id="sectionOnline" class="flex flex-col gap-6">
-
-                <!-- Online Partition Tabs Header (الأقسام الثلاثة الرئيسية) -->
-                <nav class="glass-panel rounded-2xl p-1.5 flex gap-1.5 overflow-x-auto shadow-lg border border-cyan-500/20 max-w-full min-w-0">
-                    <!-- Tab 1: Public -->
-                    <button id="tabBtn-public" onclick="switchOnlineTab('public')" class="shrink-0 min-w-max py-2.5 sm:py-3 px-3 sm:px-3.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-lg shadow-cyan-600/30">
-                        <span class="material-symbols-outlined text-base sm:text-lg">public</span>
-                        <span>1. الواجهة العامة (Public)</span>
-                    </button>
-
-                    <!-- Tab 2: Private Vault (Password / Biometric Protected) -->
-                    <button id="tabBtn-private" onclick="switchOnlineTab('private')" class="shrink-0 min-w-max py-2.5 sm:py-3 px-3 sm:px-3.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all text-slate-300 hover:text-white hover:bg-slate-800/60">
-                        <span class="material-symbols-outlined text-base sm:text-lg text-amber-400">lock</span>
-                        <span>2. الخزنة الخاصة (Private)</span>
-                    </button>
-
-                    <!-- Tab 3: Active Certificates (With Individual Passwords) -->
-                    <button id="tabBtn-certificates" onclick="switchOnlineTab('certificates')" class="shrink-0 min-w-max py-2.5 sm:py-3 px-3 sm:px-3.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all text-slate-300 hover:text-white hover:bg-slate-800/60">
-                        <span class="material-symbols-outlined text-base sm:text-lg text-emerald-400">verified</span>
-                        <span>3. الوثائق والشهادات السارية</span>
-                        <span class="text-[9px] bg-emerald-500/30 text-emerald-300 px-1.5 py-0.2 rounded font-bold hidden sm:inline">باسوورد لكل وثيقة</span>
-                    </button>
-
-                    <!-- Tab 4: Trusted Entities -->
-                    <button id="tabBtn-validity" onclick="switchOnlineTab('validity')" class="shrink-0 min-w-max py-2.5 sm:py-3 px-3 sm:px-3.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all text-slate-300 hover:text-white hover:bg-slate-800/60">
-                        <span class="material-symbols-outlined text-base sm:text-lg text-cyan-400">verified_user</span>
-                        <span>4. الجهات الموثوقة</span>
-                    </button>
-                </nav>
-
-                <!-- SUB-TAB 1: PUBLIC INFORMATION (1. الواجهة العامة) -->
-                <div id="onlineTab-public" class="flex flex-col gap-6">
-
-                    <!-- Emergency Rapid Medical Strip -->
-                    <div class="glass-card rounded-2xl p-5 border-l-4 border-l-rose-500 relative overflow-hidden">
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-11 h-11 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center shrink-0">
-                                    <span class="material-symbols-outlined text-2xl animate-pulse">e911_emergency</span>
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-bold text-white flex items-center gap-2">
-                                        <span>ملخص الطوارئ الطبي المفتوح للإسعاف</span>
-                                        <span class="text-[10px] bg-rose-500/30 text-rose-300 px-2 py-0.5 rounded-full uppercase font-bold">عام ومتاح فوراً</span>
-                                    </h3>
-                                    <p class="text-xs text-slate-300">متاح لمسعفي الطوارئ والأطباء بمجرد لمس شريحة NFC أو مسح الرمز دون الحاجة لكلمة سر</p>
-                                </div>
-                            </div>
-
-                            <!-- Badges -->
-                            <div class="flex flex-wrap items-center gap-2">
-                                <span class="px-3 py-1.5 rounded-xl bg-slate-900 border border-rose-500/30 text-rose-300 text-xs font-bold flex items-center gap-1.5">
-                                    <span class="material-symbols-outlined text-sm">bloodtype</span>
-                                    <span>فصيلة الدم:</span>
-                                    <span class="font-mono text-white text-sm bind-blood-type">O+</span>
-                                </span>
-                                <span class="px-3 py-1.5 rounded-xl bg-slate-900 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center gap-1.5">
-                                    <span class="material-symbols-outlined text-sm">warning</span>
-                                    <span class="bind-allergies truncate max-w-[180px]">حساسية بنسلين حرجة</span>
-                                </span>
-                                <span class="px-3 py-1.5 rounded-xl bg-slate-900 border border-emerald-500/30 text-emerald-300 text-xs font-bold flex items-center gap-1.5">
-                                    <span class="material-symbols-outlined text-sm">volunteer_activism</span>
-                                    <span>متبرع أعضاء مسجل</span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Professional Bento Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        <!-- Bio & Specialization -->
-                        <div class="md:col-span-2 glass-panel rounded-2xl p-6 flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between mb-3">
-                                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-cyan-400">verified</span>
-                                        <span>بيانات الاعتماد والملف الموثق</span>
-                                    </h3>
-                                    <span class="text-xs text-cyan-400 bg-cyan-950/70 border border-cyan-800 px-2 py-0.5 rounded-lg">هوية نشطة وموثقة</span>
-                                </div>
-                                <p class="text-slate-300 text-sm leading-relaxed mb-4">
-                                    هوية رقمية معتمدة ومسجلة رسميًا لدى منظومة IDC لحفظ وأمان البيانات. متخصصة في تأمين معلومات الأفراد الحساسة وتطبيق معايير التشفير اللامركزي مع الحفاظ على سرية المستندات والوصايا الطبية وحمايتها بكلمات مرور فردية وعوامل أمان بيومترية متقدمة.
-                                </p>
-                            </div>
-
-                            <!-- Highlights Pills -->
-                            <div class="flex flex-wrap gap-2 pt-3 border-t border-white/5 text-xs text-slate-300">
-                                <span class="px-3 py-1 rounded-lg bg-slate-800/80 border border-white/5 flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-xs text-cyan-400">check_circle</span>
-                                    <span>تشفير بيانات E2EE معتمد</span>
-                                </span>
-                                <span class="px-3 py-1 rounded-lg bg-slate-800/80 border border-white/5 flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-xs text-cyan-400">check_circle</span>
-                                    <span>حماية بيومترية متعددة العوامل</span>
-                                </span>
-                                <span class="px-3 py-1 rounded-lg bg-slate-800/80 border border-white/5 flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-xs text-cyan-400">check_circle</span>
-                                    <span>استقلالية تامة في وضع الأوفلاين</span>
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Organization & Address -->
-                        <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between">
-                            <div>
-                                <h3 class="text-lg font-bold text-white flex items-center gap-2 mb-3">
-                                    <span class="material-symbols-outlined text-teal-400">pin_drop</span>
-                                    <span>مركز التحقق والاعتماد</span>
-                                </h3>
-                                <div class="space-y-3 text-xs text-slate-300">
-                                    <div class="p-3 rounded-xl bg-slate-900/60 border border-white/5">
-                                        <span class="text-cyan-400 font-bold block mb-1">مركز التحقق الرقمي المعتمد IDC</span>
-                                        <span class="text-slate-400 block">القطاع التكنولوجي، التجمع الخامس، القاهرة</span>
-                                    </div>
-                                    <div class="p-3 rounded-xl bg-slate-900/60 border border-white/5">
-                                        <span class="text-teal-400 font-bold block mb-1">حالة المصادقة والتشفير</span>
-                                        <span class="text-slate-400 block">سارية المفعول حتى 2030 (SHA-256 Verified)</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="pt-4">
-                                <a href="https://maps.google.com" target="_blank" class="w-full py-2.5 px-3 rounded-xl bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/30 text-cyan-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-all">
-                                    <span class="material-symbols-outlined text-sm">map</span>
-                                    <span>فتح مركز الاعتماد على الخريطة</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- IDC Technology Explainer Card -->
-                    <div class="glass-panel rounded-2xl p-6 border border-cyan-500/20 flex flex-col sm:flex-row items-center justify-between gap-5">
-                        <div class="flex items-center gap-4">
-                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-600 to-teal-500 flex items-center justify-center shadow-lg shadow-cyan-500/30 shrink-0">
-                                <span class="material-symbols-outlined text-3xl text-slate-950 font-bold">shield</span>
-                            </div>
-                            <div>
-                                <h4 class="text-base font-bold text-white">ما هي منظومة IDC وكيف تحفظ بياناتك بأمان؟</h4>
-                                <p class="text-xs text-slate-300 mt-1 max-w-xl">
-                                    منظومة مستقلة تماماً لحفظ وحماية بيانات الأفراد (Keeping people's info safe, nothing more nothing less). تفصل البيانات إلى واجهة عامة، وخزنة خاصة محمية بيومترياً، وقسم أوفلاين مستقل يعمل بدون شبكة، مع إمكانية قفل كل وثيقة بباسورد منفصل.
-                                </p>
-                            </div>
-                        </div>
-                        <button onclick="triggerNfcTapSimulation()" class="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-xs flex items-center gap-2 shadow-lg shadow-cyan-500/20 shrink-0 transition-all active:scale-95">
-                            <span class="material-symbols-outlined text-sm">contactless</span>
-                            <span>محاكاة تجربة الشريحة</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- SUB-TAB 2: PRIVATE INFORMATION VAULT (2. الخزنة الخاصة) -->
-                <div id="onlineTab-private" class="hidden flex-col gap-6">
-
-                    <!-- STATE A: LOCKED VAULT GATE -->
-                    <div id="vaultLockScreen" class="glass-panel rounded-3xl p-8 sm:p-12 text-center flex flex-col items-center justify-center relative overflow-hidden border border-amber-500/30">
-                        <div class="w-20 h-20 rounded-3xl bg-amber-500/10 border-2 border-amber-500/40 flex items-center justify-center text-amber-400 mb-5 shadow-xl shadow-amber-500/20">
-                            <span class="material-symbols-outlined text-4xl animate-pulse">lock</span>
-                        </div>
-                        <h3 class="text-xl sm:text-2xl font-black text-white mb-2">الخزنة الخاصة مشفرة ومحمية (IDC Private Vault)</h3>
-                        <p class="text-xs sm:text-sm text-slate-300 max-w-md mb-8">
-                            تحتوي هذه الخزنة على بياناتك الحساسة، الرقم القومي، الملف الطبي السري، والتأمينات. يلزم التحقق البيومتري لفك التشفير:
-                        </p>
-
-                        <!-- Biometric & Password Unlock Triggers -->
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-md">
-                            <!-- Face ID -->
-                            <button onclick="triggerFaceIdScan('private_vault')" class="p-4 rounded-2xl bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/30 flex flex-col items-center justify-center gap-2 transition-all group active:scale-95">
-                                <span class="material-symbols-outlined text-3xl text-cyan-400 group-hover:scale-110 transition-transform">face</span>
-                                <span class="text-xs font-bold text-white">بصمة الوجه (Face ID)</span>
-                            </button>
-
-                            <!-- Fingerprint -->
-                            <button onclick="triggerFingerprintAuth('private_vault')" class="p-4 rounded-2xl bg-teal-950/80 hover:bg-teal-900 border border-teal-500/30 flex flex-col items-center justify-center gap-2 transition-all group active:scale-95">
-                                <span class="material-symbols-outlined text-3xl text-teal-400 group-hover:scale-110 transition-transform">fingerprint</span>
-                                <span class="text-xs font-bold text-white">بصمة الإصبع</span>
-                            </button>
-
-                            <!-- Password / PIN -->
-                            <button onclick="triggerPasswordPrompt('private_vault')" class="p-4 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-white/10 flex flex-col items-center justify-center gap-2 transition-all group active:scale-95">
-                                <span class="material-symbols-outlined text-3xl text-amber-400 group-hover:scale-110 transition-transform">pin</span>
-                                <span class="text-xs font-bold text-white">رمز المرور (PIN)</span>
-                            </button>
-                        </div>
-                        <p class="text-[11px] text-slate-400 mt-4">رمز PIN الافتراضي للتجربة: <span class="font-mono text-cyan-300 font-bold">1234</span></p>
-                    </div>
-
-                    <!-- STATE B: UNLOCKED VAULT CONTENT -->
-                    <div id="vaultUnlockedContent" class="hidden flex-col gap-6">
-                        <!-- Top Banner with Re-lock button -->
-                        <div class="p-4 rounded-2xl bg-emerald-950/50 border border-emerald-500/30 flex items-center justify-between">
-                            <div class="flex items-center gap-2.5">
-                                <span class="material-symbols-outlined text-emerald-400 text-2xl">lock_open</span>
-                                <div>
-                                    <h4 class="text-sm font-bold text-white">تم فك تشفير الخزنة الخاصة بنجاح</h4>
-                                    <p class="text-[11px] text-emerald-300">البيانات الحساسة معروضة حاليًا عبر جلسة مشفرة مؤقتة في IDC</p>
-                                </div>
-                            </div>
-                            <button onclick="lockPrivateVault()" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-white/20 text-xs font-bold text-slate-200 flex items-center gap-1.5 transition-all">
-                                <span class="material-symbols-outlined text-sm text-rose-400">lock</span>
-                                <span>إعادة القفل الآن</span>
-                            </button>
-                        </div>
-
-                        <!-- Private Bento Grid -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            
-                            <!-- National ID & Government Data -->
-                            <div class="glass-card rounded-2xl p-6">
-                                <div class="flex items-center justify-between mb-4">
-                                    <h4 class="text-base font-bold text-white flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-cyan-400">badge</span>
-                                        <span>بيانات الهوية الوطنية المعتمدة</span>
-                                    </h4>
-                                    <span class="text-[11px] bg-cyan-950 px-2 py-0.5 rounded text-cyan-300 font-mono">سري للغاية</span>
-                                </div>
-                                <div class="space-y-3 text-xs">
-                                    <div class="p-3 rounded-xl bg-slate-900/70 border border-white/5 flex justify-between">
-                                        <span class="text-slate-400">الرقم القومي المصري:</span>
-                                        <span class="font-mono font-bold text-cyan-300 text-sm bind-national-id">29509180104829</span>
-                                    </div>
-                                    <div class="p-3 rounded-xl bg-slate-900/70 border border-white/5 flex justify-between">
-                                        <span class="text-slate-400">رقم رخصة القيادة المهنية:</span>
-                                        <span class="font-mono font-bold text-slate-200">DL-EG-88410</span>
-                                    </div>
-                                    <div class="p-3 rounded-xl bg-slate-900/70 border border-white/5 flex justify-between">
-                                        <span class="text-slate-400">رقم الاعتماد الرقمي في IDC:</span>
-                                        <span class="font-mono font-bold text-emerald-300">IDC-SEC-2026-9942</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Health Insurance & Private Coverage -->
-                            <div class="glass-card rounded-2xl p-6">
-                                <div class="flex items-center justify-between mb-4">
-                                    <h4 class="text-base font-bold text-white flex items-center gap-2">
-                                        <span class="material-symbols-outlined text-emerald-400">shield_with_heart</span>
-                                        <span>التأمين الصحي الشامل والحد الائتماني</span>
-                                    </h4>
-                                    <span class="text-[11px] bg-emerald-950 px-2 py-0.5 rounded text-emerald-300 font-bold">فئة ذهبية VIP</span>
-                                </div>
-                                <div class="space-y-3 text-xs">
-                                    <div class="p-3 rounded-xl bg-slate-900/70 border border-white/5 flex justify-between">
-                                        <span class="text-slate-400">الجهة التأمينية:</span>
-                                        <span class="font-bold text-white">الهيئة العامة للتأمين الصحي الشامل</span>
-                                    </div>
-                                    <div class="p-3 rounded-xl bg-slate-900/70 border border-white/5 flex justify-between">
-                                        <span class="text-slate-400">الحد الائتماني السنوي للرعاية:</span>
-                                        <span class="font-mono font-bold text-emerald-400 text-sm">2,500,000 ج.م</span>
-                                    </div>
-                                    <div class="p-3 rounded-xl bg-slate-900/70 border border-white/5 flex justify-between">
-                                        <span class="text-slate-400">رقم البوليصة:</span>
-                                        <span class="font-mono font-bold text-slate-200">UHI-GOLD-4421</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Confidential Medical History & Directives -->
-                            <div class="md:col-span-2 glass-card rounded-2xl p-6">
-                                <h4 class="text-base font-bold text-white flex items-center gap-2 mb-3">
-                                    <span class="material-symbols-outlined text-rose-400">clinical_notes</span>
-                                    <span>الملف الطبي السري والوصايا الخاصة</span>
-                                </h4>
-                                <div class="p-4 rounded-xl bg-slate-900/70 border border-white/5 space-y-2 text-xs text-slate-300">
-                                    <p class="leading-relaxed">
-                                        <strong class="text-white">الملاحظات والوصايا الخاصة:</strong> 
-                                        <span class="bind-notes">في حالة الحوادث أو الطوارئ: يرجى التواصل فوراً مع جهات الاتصال المسجلة وإبراز هذه البطاقة الرقمية IDC للطواقم الطبية. مسجل كمتبرع أعضاء رسمي.</span>
-                                    </p>
-                                    <p class="leading-relaxed pt-2 border-t border-white/5">
-                                        <strong class="text-white">التنبيهات الدوائية:</strong> 
-                                        يمنع نهائياً إعطاء البنسلين، الأموكسيسيلين، ومشتقاتهم دون الرجوع للملف الطبي المركزي والتأكد من بروتوكول الحساسية.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SUB-TAB 3: ACTIVE CERTIFICATES (3. الوثائق والشهادات السارية وباسوورد لكل وثيقة) -->
-                <div id="onlineTab-certificates" class="hidden flex-col gap-6">
-                    <!-- Feature Explanation Banner -->
-                    <div class="glass-card rounded-2xl p-5 border border-cyan-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-2xl">password</span>
-                            </div>
-                            <div>
-                                <h3 class="text-base font-bold text-white flex items-center gap-2">
-                                    <span>منظومة الوثائق الموثقة مع حماية بكلمة مرور منفصلة</span>
-                                    <span class="text-[10px] bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded-full font-bold">ميزة حصرية</span>
-                                </h3>
-                                <p class="text-xs text-slate-300">يمكنك وضع كلمة سر خاصة بكل وثيقة أو شهادة على حدة لحمايتها من العرض إلا لمن تصرح له برمزها!</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-2 text-xs">
-                            <span class="px-3 py-1 rounded-xl bg-slate-900 border border-white/10 text-slate-300">الوثائق السارية: <strong class="text-emerald-400">4 وثائق</strong></span>
-                        </div>
-                    </div>
-
-                    <!-- Dynamic Certificates List Container -->
-                    <div id="certificatesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <!-- Rendered by app.js -->
-                    </div>
-                </div>
-
-                <!-- SUB-TAB 4: TRUSTED ENTITIES (4. الجهات والشركات الموثوقة) -->
-                <div id="onlineTab-validity" class="hidden flex-col gap-6">
-                    <div class="glass-card rounded-2xl p-5 border border-emerald-500/30 flex items-center justify-between gap-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-2xl">domain_verification</span>
-                            </div>
-                            <div>
-                                <h3 class="text-base font-bold text-white">الجهات والشركات المعتمدة الموثقة رسميًا</h3>
-                                <p class="text-xs text-slate-300">قائمة المؤسسات الحكومية والجهات الموثوقة التي تصادق على هوية المستخدم وصلاحية وثائقه عبر منظومة IDC</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Trusted Companies List Container -->
-                    <div id="trustedCompaniesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Rendered by app.js -->
-                    </div>
-                </div>
-            </div>
-
-
-            <!-- ========================================================================= -->
-            <!-- SECTION 2: OFFLINE MODE (القسم الأوفلاين - حفظ محلي فوري وآمن) -->
-            <!-- ========================================================================= -->
-            <div id="sectionOffline" class="hidden flex-col gap-6">
-
-                <!-- Offline Master Card -->
-                <section class="orange-subtle-box rounded-3xl p-6 sm:p-8 relative overflow-hidden card-reflection shadow-2xl">
-                    <div class="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 relative z-10">
-                        <div class="flex items-center gap-4">
-                            <div class="w-16 h-16 rounded-2xl orange-gradient flex items-center justify-center text-white shadow-xl shadow-orange-500/30 shrink-0">
-                                <span class="material-symbols-outlined text-3xl font-bold">offline_bolt</span>
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <h2 class="text-xl sm:text-2xl font-black text-white">وضع عدم الاتصال (IDC Offline Mode)</h2>
-                                </div>
-                                <p class="text-xs text-orange-200 mt-1">
-                                    يعرض الأساسيات الحيوية، الهوية، وبيانات الطوارئ من الذاكرة المحلية للجهاز بدون الحاجة لأي إنترنت أو شبكة!
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Offline Security Status -->
-                        <div class="flex flex-col sm:items-end gap-2 shrink-0">
-                            <span class="px-3 py-1 rounded-xl bg-orange-950/80 border border-orange-500/40 text-orange-300 text-xs font-bold flex items-center gap-1.5">
-                                <span class="material-symbols-outlined text-sm">security</span>
-                                <span>محمي ببصمة الإصبع و PIN</span>
-                            </span>
-                            <span class="text-[11px] text-slate-400">آخر تحديث محلي: <span class="font-mono text-white bind-last-updated">اليوم</span></span>
-                        </div>
-                    </div>
-
-                    <!-- Fast Emergency Call Grid (Zero internet required) -->
-                    <div class="mt-6 pt-5 border-t border-orange-500/20 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <a href="tel:123" class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-rose-600/30 hover:bg-rose-600/40 border border-rose-500/40 text-rose-200 text-xs font-extrabold transition-all active:scale-95">
-                            <span class="material-symbols-outlined text-lg animate-bounce">e911_emergency</span>
-                            <span>اتصال إسعاف مصر (123)</span>
-                        </a>
-                        <a href="tel:01012345678" class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl orange-gradient text-white text-xs font-extrabold shadow-lg shadow-orange-500/20 transition-all active:scale-95 bind-c1-phone">
-                            <span class="material-symbols-outlined text-lg">call</span>
-                            <span>طوارئ 1: <span class="bind-c1-name">إبراهيم المنشاوي</span></span>
-                        </a>
-                        <a href="tel:01187654321" class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-white/10 text-slate-200 text-xs font-extrabold transition-all active:scale-95 bind-c2-phone">
-                            <span class="material-symbols-outlined text-lg">call</span>
-                            <span>طوارئ 2: <span class="bind-c2-name">م. ندى الألفي</span></span>
-                        </a>
-                    </div>
-                </section>
-
-                <!-- OFFLINE DATA VIEW & EDITOR ("والداتا الي اليوزر يحطها") -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-                    <!-- Left: Emergency QR Pass (100% Offline Canvas Generator) -->
-                    <div class="glass-panel rounded-2xl p-6 flex flex-col items-center justify-center text-center border border-orange-500/20">
-                        <span class="text-xs font-bold text-orange-400 mb-2 flex items-center gap-1">
-                            <span class="material-symbols-outlined text-base">qr_code_2</span>
-                            <span>رمز QR للطوارئ (أوفلاين)</span>
-                        </span>
-                        <div class="p-3 rounded-2xl bg-[#001e38] border-2 border-cyan-500/30 shadow-xl my-2">
-                            <canvas id="offlineQrCanvas" width="180" height="180"></canvas>
-                        </div>
-                        <p class="text-[11px] text-slate-400 mt-2 max-w-[200px]">
-                            يمكن مسحه بأي كاميرا أو قارئ كود بدون اتصال بالإنترنت
-                        </p>
-                        <div class="mt-4 pt-3 border-t border-white/5 w-full flex justify-between text-xs font-mono text-slate-300">
-                            <span>فصيلة الدم:</span>
-                            <span class="text-rose-400 font-bold bind-blood-type">O+</span>
-                        </div>
-                    </div>
-
-                    <!-- Right (2 Cols): User Managed Offline Basics Data -->
-                    <div class="md:col-span-2 glass-panel rounded-2xl p-6 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-orange-400">database</span>
-                                    <span>البيانات الأساسية المحفوظة محليًا (Offline Cache)</span>
-                                </h3>
-                                <button onclick="openOfflineDataEditor()" class="px-3.5 py-1.5 rounded-xl orange-gradient text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-orange-500/20 hover:brightness-110 active:scale-95 transition-all">
-                                    <span class="material-symbols-outlined text-sm">edit</span>
-                                    <span>تعديل بياناتي</span>
-                                </button>
-                            </div>
-
-                            <!-- Data Cards Grid -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                                <!-- Card 1 -->
-                                <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5">
-                                    <span class="text-slate-400 block mb-1">الاسم بالكامل:</span>
-                                    <span class="font-bold text-white text-sm bind-full-name">أحمد إبراهيم المنشاوي</span>
-                                </div>
-
-                                <!-- Card 2 -->
-                                <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5">
-                                    <span class="text-slate-400 block mb-1">الرقم القومي:</span>
-                                    <span class="font-mono font-bold text-cyan-300 text-sm bind-national-id">29509180104829</span>
-                                </div>
-
-                                <!-- Card 3 -->
-                                <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5">
-                                    <span class="text-slate-400 block mb-1">التنبيهات والتحسس الحرج:</span>
-                                    <span class="font-bold text-amber-300 bind-allergies">حساسية بنسلين حرجة</span>
-                                </div>
-
-                                <!-- Card 4 -->
-                                <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5">
-                                    <span class="text-slate-400 block mb-1">الأمراض المزمنة:</span>
-                                    <span class="font-bold text-slate-200 bind-chronic">لا توجد أمراض مزمنة حرجة</span>
-                                </div>
-
-                                <!-- Card 5 -->
-                                <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5">
-                                    <span class="text-slate-400 block mb-1">جهة اتصال الطوارئ 1:</span>
-                                    <span class="font-bold text-emerald-300 bind-c1-name">إبراهيم المنشاوي (01012345678)</span>
-                                </div>
-
-                                <!-- Card 6 -->
-                                <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5">
-                                    <span class="text-slate-400 block mb-1">جهة اتصال الطوارئ 2:</span>
-                                    <span class="font-bold text-emerald-300 bind-c2-name">م. ندى الألفي (01187654321)</span>
-                                </div>
-                            </div>
-
-                            <!-- Emergency Directive Note Box -->
-                            <div class="mt-3 p-3.5 rounded-xl bg-orange-950/30 border border-orange-500/20 text-xs">
-                                <span class="text-orange-300 font-bold block mb-1">ملاحظات ووصية الطوارئ المحلية:</span>
-                                <p class="text-slate-300 leading-relaxed bind-notes">
-                                    في حالة الحوادث أو الطوارئ: يرجى التواصل فوراً مع جهات الاتصال المسجلة وإبراز هذه البطاقة الرقمية IDC للطواقم الطبية. مسجل كمتبرع أعضاء رسمي.
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Footer security info -->
-                        <div class="mt-4 pt-3 border-t border-white/5 flex flex-wrap items-center justify-between text-[11px] text-slate-400">
-                            <span class="flex items-center gap-1">
-                                <span class="material-symbols-outlined text-xs text-orange-400">lock</span>
-                                <span>محفوظ بأمان في ذاكرة المتصفح المحلية (localStorage Encrypted)</span>
-                            </span>
-                            <span class="font-mono text-cyan-300">IDC-OFFLINE-ENGINE-V2</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- OFFLINE SECURITY GATE (FINGERPRINT & PIN) -->
-                <div class="glass-panel rounded-2xl p-6 border border-orange-500/30 flex flex-col sm:flex-row items-center justify-between gap-5">
-                    <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 rounded-2xl bg-orange-500/20 text-orange-400 border border-orange-500/40 flex items-center justify-center shrink-0">
-                            <span class="material-symbols-outlined text-3xl">fingerprint</span>
-                        </div>
-                        <div>
-                            <h4 class="text-base font-bold text-white">حماية أمان وضع عدم الاتصال (بصمة + باسورد)</h4>
-                            <p class="text-xs text-slate-300 mt-1 max-w-xl">
-                                يمكنك قفل الوصول وتعديل البيانات في وضع الأوفلاين بحيث لا يمكن لأحد غيرك فتح أو تعديل معلوماتك المحلية دون البصمة أو الرمز السري.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2 shrink-0">
-                        <button onclick="triggerFingerprintAuth('offline_vault')" class="px-4 py-2.5 rounded-xl bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 border border-orange-500/40 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95">
-                            <span class="material-symbols-outlined text-base">fingerprint</span>
-                            <span>مسح البصمة</span>
-                        </button>
-                        <button onclick="openOfflineDataEditor()" class="px-4 py-2.5 rounded-xl orange-gradient text-white text-xs font-extrabold flex items-center gap-1.5 shadow-lg shadow-orange-500/20 transition-all active:scale-95">
-                            <span class="material-symbols-outlined text-base">lock</span>
-                            <span>تغيير رمز PIN</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-        </main>
-    </div>
-
-
-    <!-- ========================================================================= -->
-    <!-- SLIDING SETTINGS & CUSTOMER SUPPORT DRAWER (قائمة الإعدادات وخدمة العملاء العلوية) -->
-    <!-- ========================================================================= -->
-    <div id="settingsDrawerModal" class="drawer-backdrop hidden">
-        <div class="drawer-panel p-6">
-            <!-- Drawer Header -->
-            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-                        <span class="material-symbols-outlined text-2xl">settings</span>
-                    </div>
-                    <div>
-                        <h3 class="text-base font-extrabold text-white">إعدادات المنظومة</h3>
-                        <p class="text-[11px] text-slate-400">مركز التحكم والأمان لـ IDC</p>
-                    </div>
-                </div>
-                <button onclick="closeSettingsDrawer()" class="p-2 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-                    <span class="material-symbols-outlined text-xl">close</span>
-                </button>
-            </div>
-
-            <!-- User Summary Inside Drawer -->
-            <div class="p-4 rounded-2xl bg-slate-900/80 border border-cyan-500/20 mb-5 flex items-center gap-3">
-                <div class="w-12 h-12 rounded-xl overflow-hidden border border-cyan-400/40 shrink-0">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
-                </div>
-                <div class="overflow-hidden">
-                    <h4 class="text-sm font-bold text-white truncate bind-full-name">أحمد إبراهيم المنشاوي</h4>
-                    <p class="text-[11px] text-cyan-300 font-mono truncate">UID: IDC-SEC-2026-9942</p>
-                    <span id="drawerAuthMethodTag" class="text-[10px] text-emerald-400 font-semibold block">موثق ومحمي بيومترياً</span>
-                </div>
-            </div>
-
-            <!-- Menu Links (تعديل بيانات، شهادات، وخدمة العملاء) -->
-            <div class="space-y-2 flex-1">
-                <span class="text-[11px] text-slate-400 uppercase tracking-wider font-bold block px-2 mb-1">البيانات والوثائق</span>
-                
-                <!-- 1. Edit Data (لو عايز يغير حاجة) -->
-                <button onclick="closeSettingsDrawer(); openOfflineDataEditor();" class="w-full p-3 rounded-xl bg-slate-900/50 hover:bg-slate-800/80 border border-white/5 text-slate-200 text-xs font-bold flex items-center justify-between transition-all group">
-                    <div class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-teal-400 text-lg group-hover:scale-110 transition-transform">edit_note</span>
-                        <span>تعديل وتحديث البيانات الشخصية</span>
-                    </div>
-                    <span class="material-symbols-outlined text-slate-500 text-sm">chevron_left</span>
-                </button>
-
-                <!-- 2. Manage Certificates & Passwords -->
-                <button onclick="closeSettingsDrawer(); switchOnlineTab('certificates');" class="w-full p-3 rounded-xl bg-slate-900/50 hover:bg-slate-800/80 border border-white/5 text-slate-200 text-xs font-bold flex items-center justify-between transition-all group">
-                    <div class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-cyan-400 text-lg group-hover:scale-110 transition-transform">password</span>
-                        <span>إدارة كلمات مرور الوثائق والشهادات</span>
-                    </div>
-                    <span class="material-symbols-outlined text-slate-500 text-sm">chevron_left</span>
-                </button>
-
-                <!-- 3. Change PIN -->
-                <button onclick="closeSettingsDrawer(); triggerPasswordPrompt('change_pin');" class="w-full p-3 rounded-xl bg-slate-900/50 hover:bg-slate-800/80 border border-white/5 text-slate-200 text-xs font-bold flex items-center justify-between transition-all group">
-                    <div class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-amber-400 text-lg group-hover:scale-110 transition-transform">pin</span>
-                        <span>تغيير رمز PIN الرئيسي للمنظومة</span>
-                    </div>
-                    <span class="material-symbols-outlined text-slate-500 text-sm">chevron_left</span>
-                </button>
-
-                <span class="text-[11px] text-slate-400 uppercase tracking-wider font-bold block px-2 pt-3 mb-1">الدعم والمساعدة</span>
-
-                <!-- 4. Customer Service (لو عايز يتواصل مع خدمة العملاء) -->
-                <button onclick="openCustomerServiceModal()" class="w-full p-3 rounded-xl bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/30 text-cyan-200 text-xs font-bold flex items-center justify-between transition-all group">
-                    <div class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-cyan-300 text-lg group-hover:scale-110 transition-transform">support_agent</span>
-                        <span>التواصل مع خدمة العملاء (24/7)</span>
-                    </div>
-                    <span class="px-2 py-0.5 rounded-full bg-cyan-500/30 text-cyan-300 text-[10px]">مباشر</span>
-                </button>
-
-                <!-- 5. Phone View Toggle -->
-                <button onclick="toggleMobileFrame()" class="w-full p-3 rounded-xl bg-slate-900/50 hover:bg-slate-800/80 border border-white/5 text-slate-200 text-xs font-bold flex items-center justify-between transition-all group">
-                    <div class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-slate-400 text-lg group-hover:scale-110 transition-transform">smartphone</span>
-                        <span>تبديل وضع الهاتف / شاشة كاملة</span>
-                    </div>
-                    <span class="material-symbols-outlined text-slate-500 text-sm">chevron_left</span>
-                </button>
-
-                <!-- 6. Toggle Language -->
-                <button onclick="toggleLanguage()" class="w-full p-3 rounded-xl bg-slate-900/50 hover:bg-slate-800/80 border border-white/5 text-slate-200 text-xs font-bold flex items-center justify-between transition-all group">
-                    <div class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-slate-400 text-lg group-hover:scale-110 transition-transform">translate</span>
-                        <span>تبديل اللغة (English / العربية)</span>
-                    </div>
-                    <span class="material-symbols-outlined text-slate-500 text-sm">chevron_left</span>
-                </button>
-            </div>
-
-            <!-- Drawer Bottom Actions -->
-            <div class="pt-5 border-t border-white/10 space-y-2 mt-4">
-                <button onclick="lockApplication()" class="w-full py-2.5 px-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-xs font-bold flex items-center justify-center gap-2 transition-all">
-                    <span class="material-symbols-outlined text-base">lock</span>
-                    <span>قفل المنظومة بالبصمة الآن</span>
-                </button>
-                <button onclick="signOutToLanding()" class="w-full py-2.5 px-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 text-xs font-bold flex items-center justify-center gap-2 transition-all">
-                    <span class="material-symbols-outlined text-base">logout</span>
-                    <span>تسجيل الخروج والعودة لشاشة البداية</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========================================================================= -->
-    <!-- ACCOUNT QUICK PROFILE SHEET (شاشة الحساب الشخصي عند النقر على الصورة العلوية) -->
-    <!-- ========================================================================= -->
-    <div id="accountQuickModal" class="modal-backdrop fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
-        <div class="glass-panel rounded-3xl p-6 sm:p-8 max-w-sm w-full relative border border-cyan-400/40 shadow-2xl">
-            <button onclick="closeAccountModal()" class="absolute top-4 left-4 text-slate-400 hover:text-white p-1 rounded-full">
-                <span class="material-symbols-outlined text-xl">close</span>
-            </button>
-
-            <div class="flex flex-col items-center text-center">
-                <!-- Big Avatar with badge -->
-                <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-cyan-400 shadow-xl shadow-cyan-500/30 mb-3 relative">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
-                </div>
-                
-                <h3 class="text-lg font-black text-white bind-full-name">أحمد إبراهيم المنشاوي</h3>
-                <p class="text-xs text-cyan-300 font-semibold mt-0.5 bind-job-title">مهندس نظم أمن المعلومات وحماية البيانات</p>
-                <span class="text-[11px] text-slate-400 font-mono mt-1">UID: IDC-SEC-2026-9942</span>
-
-                <!-- Auth Verification Method Tag -->
-                <div id="accountAuthMethodTag" class="mt-3 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-sm">verified</span>
-                    <span>موثق عبر Password + NFC</span>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="w-full space-y-2 mt-6">
-                    <button onclick="closeAccountModal(); openOfflineDataEditor();" class="w-full py-2.5 px-3 rounded-xl bg-teal-600/20 hover:bg-teal-600/30 border border-teal-500/30 text-teal-300 text-xs font-bold flex items-center justify-center gap-2 transition-all">
-                        <span class="material-symbols-outlined text-base">edit_note</span>
-                        <span>تعديل البيانات الشخصية</span>
-                    </button>
-                    <button onclick="closeAccountModal(); openCustomerServiceModal();" class="w-full py-2.5 px-3 rounded-xl bg-cyan-600/20 hover:bg-cyan-600/30 border border-cyan-500/30 text-cyan-300 text-xs font-bold flex items-center justify-center gap-2 transition-all">
-                        <span class="material-symbols-outlined text-base">support_agent</span>
-                        <span>خدمة العملاء والدعم الفني</span>
-                    </button>
-                    <button onclick="closeAccountModal(); lockApplication();" class="w-full py-2.5 px-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-bold flex items-center justify-center gap-2 transition-all">
-                        <span class="material-symbols-outlined text-base">lock</span>
-                        <span>قفل المنظومة بالبصمة</span>
-                    </button>
-                    <button onclick="closeAccountModal(); signOutToLanding();" class="w-full py-2 px-3 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold hover:bg-slate-700 transition-all">
-                        تسجيل الخروج
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========================================================================= -->
-    <!-- CUSTOMER SERVICE & LIVE SUPPORT MODAL (نافذة خدمة العملاء للتواصل والتعديل) -->
-    <!-- ========================================================================= -->
-    <div id="customerServiceModal" class="modal-backdrop fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
-        <div class="glass-panel rounded-3xl p-6 sm:p-8 max-w-lg w-full relative border border-cyan-400/40 shadow-2xl flex flex-col max-h-[90vh]">
-            <button onclick="closeModal('customerServiceModal')" class="absolute top-4 left-4 text-slate-400 hover:text-white p-1 rounded-full">
-                <span class="material-symbols-outlined text-xl">close</span>
-            </button>
-
-            <div class="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
-                <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-3xl">support_agent</span>
-                </div>
-                <div>
-                    <h3 class="text-base font-extrabold text-white">خدمة عملاء IDC المشفرة</h3>
-                    <p class="text-xs text-slate-300">تواصل مباشر لتعديل البيانات، حل المشكلات والاستفسارات</p>
-                </div>
-            </div>
-
-            <!-- Live Chat Messages Container -->
-            <div id="supportChatBox" class="flex-1 min-h-[200px] max-h-[260px] overflow-y-auto p-3.5 rounded-2xl bg-slate-950/70 border border-white/5 space-y-3 flex flex-col mb-4">
-                <div class="p-3 rounded-2xl bg-slate-900 border border-white/10 text-slate-200 text-xs max-w-[85%] self-start">
-                    مرحباً بك! فريق الدعم الفني وخدمة عملاء IDC متواجد لمساعدتك في أي استفسار أو تعديل لبياناتك الشخصية. كيف يمكننا مساعدتك؟
-                </div>
-            </div>
-
-            <!-- Quick Inquiry Suggestions -->
-            <div class="flex flex-wrap gap-1.5 mb-3">
-                <button type="button" onclick="document.getElementById('supportMsgInput').value = 'أرغب في تحديث رقم الهاتف والبيانات الشخصية'; sendCustomerServiceMessage();" class="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 text-cyan-300 hover:bg-slate-700 transition-colors">
-                    طلب تعديل بيانات
-                </button>
-                <button type="button" onclick="document.getElementById('supportMsgInput').value = 'استفسار بخصوص شريحة NFC ورمز QR'; sendCustomerServiceMessage();" class="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 text-cyan-300 hover:bg-slate-700 transition-colors">
-                    استفسار NFC / QR
-                </button>
-                <button type="button" onclick="document.getElementById('supportMsgInput').value = 'أرغب في إضافة وثيقة جديدة مؤمنة'; sendCustomerServiceMessage();" class="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 text-cyan-300 hover:bg-slate-700 transition-colors">
-                    إضافة وثيقة مؤمنة
-                </button>
-            </div>
-
-            <!-- Send Input Form -->
-            <form onsubmit="sendCustomerServiceMessage(event)" class="flex gap-2">
-                <input type="text" id="supportMsgInput" placeholder="اكتب استفسارك أو طلبك هنا..." required class="flex-1 py-2.5 px-3.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-400">
-                <button type="submit" class="py-2.5 px-4 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold flex items-center gap-1 transition-all shadow-lg shadow-cyan-500/20 shrink-0">
-                    <span>إرسال</span>
-                    <span class="material-symbols-outlined text-base">send</span>
-                </button>
-            </form>
-
-            <!-- Support Status Strip -->
-            <div class="mt-3 pt-2.5 border-t border-white/5 flex flex-wrap items-center justify-between text-[11px] text-slate-400">
-                <span>تذكرة الدعم الفني: <strong class="font-mono text-cyan-300">#IDC-9921</strong></span>
-                <span class="flex items-center gap-1 text-emerald-400">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                    <span>خدمة العملاء متصلة الآن</span>
-                </span>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========================================================================= -->
-    <!-- MULTI-STEP AUTH REGISTRATION & LOGIN MODAL (كونسبت الديمو الأول بتصميم جوجل) -->
-    <!-- ========================================================================= -->
-    <div id="authRegisterModal" class="modal-backdrop fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
-        <div class="glass-panel rounded-3xl p-6 sm:p-8 max-w-lg w-full relative border border-cyan-400/40 shadow-2xl max-h-[92vh] overflow-y-auto">
-            <button onclick="closeModal('authRegisterModal')" class="absolute top-4 left-4 text-slate-400 hover:text-white p-1 rounded-full">
-                <span class="material-symbols-outlined text-xl">close</span>
-            </button>
-
-            <!-- Multi-colored IDC Branding (Matching Demo 1 Concept) -->
-            <div class="text-center mb-4">
-                <div class="text-3xl font-black tracking-widest idc-wm-color inline-flex gap-1 mb-1">
-                    <span>I</span><span>D</span><span>C</span>
-                </div>
-                <h3 id="authModalTitle" class="text-lg font-black text-white">تسجيل الدخول / إنشاء هوية مشفرة</h3>
-                <p id="authModalSubtitle" class="text-xs text-slate-300 mt-0.5">المتابعة إلى منظومة IDC لحفظ وأمان البيانات</p>
-            </div>
-
-            <!-- STEP 1: PERSONAL IDENTIFIER & METHOD (الخطوة 1: البيانات واختيار الطريقة) -->
-            <div id="authStep1" class="space-y-4">
-                <!-- Dual Method Selector Pills -->
-                <div class="grid grid-cols-2 gap-2 p-1 rounded-xl bg-slate-900 border border-white/10 text-xs font-bold">
-                    <button type="button" id="authBtnTabNfc" onclick="openAuthModal('nfc')" class="py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all text-white bg-cyan-600/30 border border-cyan-500/40">
-                        <span class="material-symbols-outlined text-base">contactless</span>
-                        <span>Password + NFC</span>
-                    </button>
-                    <button type="button" id="authBtnTabQr" onclick="openAuthModal('qr')" class="py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all text-slate-300 hover:text-white">
-                        <span class="material-symbols-outlined text-base">qr_code_2</span>
-                        <span>Password + QR</span>
-                    </button>
-                </div>
-
-                <!-- Floating Label Fields (Demo 1 Concept) -->
-                <div class="demo-fld">
-                    <input type="text" id="authFullName" required placeholder=" " value="أحمد إبراهيم المنشاوي">
-                    <label>الاسم الكامل</label>
-                </div>
-
-                <div class="demo-fld">
-                    <input type="text" id="authNationalId" required placeholder=" " maxlength="14" dir="ltr" value="29509180104829">
-                    <label>الرقم القومي المصري (14 رقم)</label>
-                </div>
-
-                <div class="demo-fld">
-                    <input type="text" id="authJobTitle" required placeholder=" " value="مهندس نظم أمن المعلومات وحماية البيانات">
-                    <label>المسمى المهني / التخصص</label>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2 pt-2">
-                    <button type="button" onclick="quickDemoLogin()" class="py-3 px-3 rounded-xl bg-slate-900 border border-white/10 hover:border-cyan-500/40 text-slate-300 text-xs font-bold transition-all flex items-center justify-center gap-1">
-                        <span class="material-symbols-outlined text-base text-cyan-400">bolt</span>
-                        <span>تخطي تجريبي</span>
-                    </button>
-                    <button type="button" onclick="goToAuthStep(2)" class="py-3 px-4 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1 shadow-lg shadow-cyan-500/20 transition-all">
-                        <span>التالي</span>
-                        <span class="material-symbols-outlined text-base">arrow_back</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- STEP 2: VERIFICATION & PASSWORD (الخطوة 2: فحص الشريحة/الرمز وكلمة المرور) -->
-            <div id="authStep2" class="hidden space-y-4">
-                <!-- Method-Specific Sensor View -->
-                <div id="authNfcSection" class="p-4 rounded-2xl bg-slate-900/80 border border-cyan-500/30 text-center">
-                    <div onclick="simulateAuthNfcScan()" class="w-16 h-16 rounded-full bg-cyan-500/20 border border-cyan-400/50 flex items-center justify-center mx-auto mb-2 cursor-pointer hover:scale-105 active:scale-95 transition-all" title="انقر لمحاكاة لمس NFC">
-                        <span id="authNfcIcon" class="material-symbols-outlined text-3xl text-cyan-300">contactless</span>
-                    </div>
-                    <p id="authNfcStatusTxt" class="text-xs text-cyan-300 font-bold">المس شريحة NFC المعتمدة للتأكيد</p>
-                    <span class="text-[10px] text-slate-400 block mt-0.5 font-mono">NTAG216 • 13.56MHz Supported</span>
-                </div>
-
-                <div id="authQrSection" class="hidden p-4 rounded-2xl bg-slate-900/80 border border-cyan-500/30 text-center">
-                    <canvas id="authQrCanvasPreview" class="mx-auto rounded-xl shadow-lg mb-2"></canvas>
-                    <p class="text-xs text-cyan-300 font-bold">رمز QR الرقمي المعتمد للمستخدمين بدون NFC</p>
-                    <span class="text-[10px] text-slate-400 block mt-0.5">جاهز للمسح والتوثيق المشفر</span>
-                </div>
-
-                <!-- Floating Password Field -->
-                <div class="demo-fld">
-                    <input type="password" id="authPassword" required placeholder=" " value="1234" dir="ltr">
-                    <label>كلمة المرور / رمز PIN السري</label>
-                </div>
-
-                <!-- Show password toggle -->
-                <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none">
-                    <input type="checkbox" onchange="document.getElementById('authPassword').type = this.checked ? 'text' : 'password'" class="rounded border-white/20 accent-cyan-500">
-                    <span>إظهار كلمة المرور</span>
-                </label>
-
-                <!-- Navigation Buttons -->
-                <div class="grid grid-cols-2 gap-2 pt-2">
-                    <button type="button" onclick="goToAuthStep(1)" class="py-3 px-3 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold hover:bg-slate-700 transition-all">
-                        السابق
-                    </button>
-                    <button type="button" onclick="goToAuthStep(3)" class="py-3 px-4 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs flex items-center justify-center gap-1 shadow-lg shadow-cyan-500/20 transition-all">
-                        <span>متابعة الإعداد</span>
-                        <span class="material-symbols-outlined text-base">arrow_back</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- STEP 3: SETUP REVIEW "جهّزنا لك 3 أقسام" (من كود الديمو الأول setup()) -->
-            <div id="authStep3" class="hidden space-y-4">
-                <div class="text-center">
-                    <h3 class="text-lg font-black text-white">جهّزنا لك 3 أقسام رئيسية</h3>
-                    <p class="text-xs text-slate-300 mt-1">يتم توزيع بياناتك لضمان أعلى درجات الخصوصية والأمان</p>
-                </div>
-
-                <!-- 3 Sections Bento List from Demo 1 -->
-                <div class="space-y-2.5 text-xs">
-                    <div class="p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0">
-                            <span class="material-symbols-outlined text-xl">public</span>
-                        </div>
-                        <div>
-                            <span class="font-bold text-white block">1. عامة (Public)</span>
-                            <span class="text-slate-300 text-[11px]">متاحة للإسعاف والطوارئ: الاسم، الفصيلة، وبطاقة الهوية.</span>
-                        </div>
-                    </div>
-
-                    <div class="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-                            <span class="material-symbols-outlined text-xl">lock</span>
-                        </div>
-                        <div>
-                            <span class="font-bold text-white block">2. خاصة (Private)</span>
-                            <span class="text-slate-300 text-[11px]">الرقم القومي والملف السري، محمية بالبصمة ورمز PIN.</span>
-                        </div>
-                    </div>
-
-                    <div class="p-3.5 rounded-2xl bg-amber-950/40 border border-amber-500/30 flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-                            <span class="material-symbols-outlined text-xl">verified</span>
-                        </div>
-                        <div>
-                            <span class="font-bold text-white block">3. وثائق وشهادات سارية (Certificates)</span>
-                            <span class="text-slate-300 text-[11px]">كل شهادة أو رخصة يمكن قفلها بكلمة مرور منفصلة خاصة بها.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <button type="button" onclick="finishAuthAndEnter()" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-black text-sm shadow-xl shadow-emerald-500/30 hover:brightness-110 active:scale-98 transition-all flex items-center justify-center gap-2 mt-2">
-                    <span class="material-symbols-outlined text-xl">check_circle</span>
-                    <span>ابدأ واستعرض منظومة IDC</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- ========================================================================= -->
-    <!-- 2. BIOMETRIC APP LOCK GATE (شاشة القفل التلقائي بالبصمة عند كل فتح) -->
-    <!-- ========================================================================= -->
-    <div id="appLockGate" class="gate-screen-overlay hidden">
-        <div class="glass-panel rounded-3xl p-8 sm:p-12 max-w-sm w-full flex flex-col items-center justify-center text-center relative border border-cyan-400/40 shadow-2xl">
-            <!-- Logo -->
-            <div class="w-16 h-16 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-4 shadow-lg shadow-cyan-500/20">
-                <span class="material-symbols-outlined text-3xl">shield</span>
-            </div>
-
-            <h3 class="text-xl font-black text-white">منظومة IDC مقفلة للأمان</h3>
-            <p class="text-xs text-slate-300 mt-1">مرحباً بك مجدداً <strong class="text-cyan-300 bind-full-name">أحمد إبراهيم</strong></p>
-            <span class="text-[11px] text-slate-400 font-mono mt-0.5">UID: IDC-SEC-2026-9942</span>
-
-            <!-- Fingerprint Sensor Touch Zone -->
-            <div class="my-8 flex flex-col items-center">
-                <div id="gateFingerprintBtn" onclick="unlockAppWithBiometric('fingerprint')" class="biometric-pulse-ring">
-                    <span class="material-symbols-outlined text-5xl text-cyan-300 select-none">fingerprint</span>
-                </div>
-                <p class="text-xs text-cyan-300 font-semibold mt-4 animate-pulse">المس بصمتك لفتح المنظومة</p>
-            </div>
-
-            <!-- Secondary Unlock Options: Face ID / PIN -->
-            <div class="grid grid-cols-2 gap-2 w-full pt-4 border-t border-white/10 text-xs">
-                <button onclick="unlockAppWithBiometric('face')" class="py-2.5 px-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/10 text-slate-200 font-semibold flex items-center justify-center gap-1.5 transition-all">
-                    <span class="material-symbols-outlined text-base text-cyan-400">face</span>
-                    <span>بصمة الوجه</span>
-                </button>
-                <button onclick="unlockAppWithBiometric('pin')" class="py-2.5 px-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-white/10 text-slate-200 font-semibold flex items-center justify-center gap-1.5 transition-all">
-                    <span class="material-symbols-outlined text-base text-amber-400">key</span>
-                    <span>رمز PIN</span>
-                </button>
-            </div>
-
-            <!-- Reset / Re-register Link -->
-            <button onclick="restartRegistration()" class="text-[11px] text-slate-400 hover:text-cyan-300 mt-5 transition-colors underline">
-                تسجيل هوية جديدة / إعادة ضبط البيانات
-            </button>
-        </div>
-    </div>
-
-
-    <!-- ========================================================================= -->
-    <!-- INTERACTIVE MODALS & BIOMETRIC SUITE -->
-    <!-- ========================================================================= -->
-
-    <!-- MODAL 1: FACE ID 3D SCANNER -->
-    <div id="faceIdModal" class="modal-backdrop fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
-        <div class="glass-panel rounded-3xl p-8 max-w-sm w-full flex flex-col items-center justify-center text-center relative border border-cyan-400/40 shadow-2xl">
-            <!-- Close button -->
-            <button onclick="closeModal('faceIdModal')" class="absolute top-4 left-4 text-slate-400 hover:text-white p-1 rounded-full">
-                <span class="material-symbols-outlined text-xl">close</span>
-            </button>
-
-            <!-- Face Scanning Viewport Box -->
-            <div class="face-scan-box my-4">
-                <div class="face-grid-overlay"></div>
-                <div id="faceLaser" class="face-laser"></div>
-                <span class="material-symbols-outlined text-8xl text-cyan-400/70 select-none">face</span>
-                <span id="faceSuccessIcon" class="material-symbols-outlined text-7xl text-emerald-400 absolute hidden z-20">check_circle</span>
-            </div>
-
-            <h3 class="text-lg font-black text-white mt-2">التحقق البيومتري عبر بصمة الوجه</h3>
-            <p id="faceScanStatus" class="text-cyan-300 font-bold text-sm mt-1 animate-pulse">جاري مسح بصمة الوجه 3D واستشعار العمق...</p>
-
-            <div class="mt-6 flex items-center gap-2 text-[11px] text-slate-400">
-                <span class="material-symbols-outlined text-sm text-cyan-400">lock</span>
-                <span>تشفير آمن بنمط IDC Face Biometric Security</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 2: FINGERPRINT SENSOR SCANNER -->
-    <div id="fingerprintModal" class="modal-backdrop fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
-        <div class="glass-panel rounded-3xl p-8 max-w-sm w-full flex flex-col items-center justify-center text-center relative border border-cyan-400/40 shadow-2xl">
-            <button onclick="closeModal('fingerprintModal')" class="absolute top-4 left-4 text-slate-400 hover:text-white p-1 rounded-full">
-                <span class="material-symbols-outlined text-xl">close</span>
-            </button>
-
-            <!-- Touch Area -->
-            <div id="fpInteractiveZone" class="fingerprint-touch-zone my-6">
-                <span id="fpTouchIcon" class="material-symbols-outlined text-5xl text-cyan-400 select-none transition-all">fingerprint</span>
-            </div>
-
-            <h3 class="text-lg font-black text-white">التحقق ببصمة الإصبع</h3>
-            <p id="fpStatusTxt" class="text-cyan-300 text-sm mt-1 font-semibold">المس الدائرة بإصبعك لتأكيد الهوية</p>
-            <p class="text-[11px] text-slate-400 mt-4">مطابق لمعايير الحماية البيومترية FIDO2</p>
-        </div>
-    </div>
-
-    <!-- MODAL 3: GLOBAL PIN / PASSWORD PROMPT -->
-    <div id="passwordPromptModal" class="modal-backdrop fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
-        <div class="glass-panel rounded-3xl p-6 sm:p-8 max-w-sm w-full flex flex-col items-center justify-center text-center relative border border-cyan-400/40 shadow-2xl">
-            <button onclick="closeModal('passwordPromptModal')" class="absolute top-4 left-4 text-slate-400 hover:text-white p-1 rounded-full">
-                <span class="material-symbols-outlined text-xl">close</span>
-            </button>
-
-            <div class="w-14 h-14 rounded-2xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center mb-3">
-                <span class="material-symbols-outlined text-3xl">key</span>
-            </div>
-
-            <h3 class="text-lg font-bold text-white mb-1">أدخل رمز المرور السري (PIN)</h3>
-            <p class="text-xs text-slate-300 mb-4">أدخل الرمز لفك تشفير الخزنة (الافتراضي: 1234)</p>
-
-            <input type="password" id="globalPinInput" maxlength="8" placeholder="••••" class="w-full text-center text-2xl tracking-widest py-3 px-4 rounded-xl bg-slate-900 border border-cyan-500/40 text-white font-mono focus:outline-none focus:border-cyan-400 mb-2">
-            
-            <p id="pinErrorMsg" class="text-xs text-rose-400 font-bold hidden mb-3"></p>
-
-            <div class="grid grid-cols-2 gap-2 w-full mt-2">
-                <button onclick="closeModal('passwordPromptModal')" class="py-2.5 px-4 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold hover:bg-slate-700 transition-all">إلغاء</button>
-                <button id="confirmGlobalPinBtn" class="py-2.5 px-4 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-extrabold shadow-lg shadow-cyan-500/20 transition-all">تأكيد الرمز</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 4: INDIVIDUAL CERTIFICATE PASSWORD PROMPT ("باسورد علي كل شهاده") -->
-    <div id="certPasswordModal" class="modal-backdrop fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
-        <div class="glass-panel rounded-3xl p-6 sm:p-8 max-w-md w-full flex flex-col items-center justify-center text-center relative border border-amber-500/40 shadow-2xl">
-            <button onclick="closeModal('certPasswordModal')" class="absolute top-4 left-4 text-slate-400 hover:text-white p-1 rounded-full">
-                <span class="material-symbols-outlined text-xl">close</span>
-            </button>
-
-            <div class="w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center mb-3">
-                <span class="material-symbols-outlined text-3xl">lock</span>
-            </div>
-
-            <h3 class="text-base sm:text-lg font-bold text-white mb-1" id="certLockModalTitle">هذه الوثيقة محمية برمز مرور خاص</h3>
-            <p class="text-xs text-slate-300 mb-4">أدخل كلمة المرور المخصصة لهذه الوثيقة لعرض بيانات الاعتماد الرسمية</p>
-
-            <input type="password" id="certSinglePinInput" placeholder="أدخل كلمة مرور الوثيقة" class="w-full text-center text-lg py-3 px-4 rounded-xl bg-slate-900 border border-amber-500/40 text-white font-mono focus:outline-none focus:border-amber-400 mb-2">
-            
-            <p id="certPinError" class="text-xs text-rose-400 font-bold hidden mb-2"></p>
-            <p id="certPinHint" class="text-[11px] text-amber-300 mb-4 font-mono"></p>
-
-            <div class="grid grid-cols-2 gap-2 w-full">
-                <button onclick="closeModal('certPasswordModal')" class="py-2.5 px-4 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold hover:bg-slate-700 transition-all">إلغاء</button>
-                <button onclick="verifyCertificateSinglePin()" class="py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-extrabold shadow-lg shadow-amber-500/20 transition-all">فتح الوثيقة</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 5: CERTIFICATE SECURITY CONFIGURATION MODAL (Set/Change Password per cert) -->
-    <div id="certSecurityConfigModal" class="modal-backdrop fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
-        <div class="glass-panel rounded-3xl p-6 sm:p-8 max-w-md w-full relative border border-cyan-500/40 shadow-2xl">
-            <button onclick="closeModal('certSecurityConfigModal')" class="absolute top-4 left-4 text-slate-400 hover:text-white p-1 rounded-full">
-                <span class="material-symbols-outlined text-xl">close</span>
-            </button>
-
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center shrink-0">
-                    <span class="material-symbols-outlined text-2xl">admin_panel_settings</span>
-                </div>
-                <div>
-                    <h3 class="text-base font-bold text-white" id="certConfigTitle">إدارة حماية الوثيقة</h3>
-                    <p class="text-xs text-slate-300">تخصيص كلمة مرور فردية لهذه الوثيقة</p>
-                </div>
-            </div>
-
-            <!-- Toggle Protection -->
-            <div class="p-4 rounded-xl bg-slate-900/80 border border-white/10 mb-4 flex items-center justify-between">
-                <div>
-                    <span class="text-sm font-bold text-white block">تفعيل القفل برمز مرور</span>
-                    <span class="text-xs text-slate-400">طلب كلمة سر قبل السماح بعرض الوثيقة</span>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" id="certProtectToggle" class="sr-only peer">
-                    <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-500"></div>
-                </label>
-            </div>
-
-            <!-- Password Input -->
-            <div id="certPassInputWrapper" class="space-y-2 mb-6">
-                <label class="text-xs font-semibold text-slate-300 block">كلمة المرور المخصصة لهذه الوثيقة:</label>
-                <input type="text" id="certCustomPasswordInput" placeholder="أدخل كلمة المرور الجديدة" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-white/10 text-white font-mono text-sm focus:outline-none focus:border-cyan-400">
-                <p class="text-[11px] text-slate-400">يمكنك كتابة أرقام أو حروف (مثال: 777 أو idc2026)</p>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-                <button onclick="closeModal('certSecurityConfigModal')" class="py-2.5 px-4 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold hover:bg-slate-700 transition-all">إلغاء</button>
-                <button onclick="saveCertSecuritySettings()" class="py-2.5 px-4 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-extrabold transition-all shadow-lg shadow-cyan-500/20">حفظ الإعدادات</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 6: OFFICIAL CERTIFICATE VIEWER MODAL -->
-    <div id="certViewerModal" class="modal-backdrop fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
-        <div class="glass-panel rounded-3xl p-6 sm:p-8 max-w-2xl w-full relative border border-cyan-400/40 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <button onclick="closeModal('certViewerModal')" class="absolute top-4 left-4 text-slate-400 hover:text-white p-1 rounded-full">
-                <span class="material-symbols-outlined text-xl">close</span>
-            </button>
-
-            <!-- Certificate Document Paper View -->
-            <div class="p-6 sm:p-8 rounded-2xl bg-gradient-to-b from-[#002447] to-[#00172e] border-2 border-cyan-500/40 relative overflow-hidden shadow-2xl">
-                <!-- Background seal watermark -->
-                <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
-                    <span class="material-symbols-outlined text-[280px]">workspace_premium</span>
-                </div>
-
-                <!-- Top Emblem Header -->
-                <div class="flex items-center justify-between border-b border-cyan-500/30 pb-4 mb-6">
-                    <div class="flex items-center gap-3">
-                        <div id="viewCertSeal" class="w-14 h-14 rounded-2xl border-2 flex items-center justify-center text-cyan-300 bg-slate-900/80">
-                            <span class="material-symbols-outlined text-3xl">verified</span>
-                        </div>
-                        <div>
-                            <span class="text-[10px] text-cyan-400 uppercase font-mono tracking-widest block">وثيقة معتمدة ومحمية عبر IDC</span>
-                            <h3 class="text-base sm:text-xl font-black text-white" id="viewCertTitle">وثيقة الاعتماد الرسمية</h3>
-                        </div>
-                    </div>
-                    <div class="text-end">
-                        <span class="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/30">سارية وصالحة</span>
-                    </div>
-                </div>
-
-                <!-- Body Details -->
-                <div class="space-y-4 text-xs sm:text-sm text-slate-200">
-                    <div class="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-2">
-                        <div class="flex justify-between">
-                            <span class="text-slate-400">الجهة المصدرة:</span>
-                            <span class="font-bold text-white" id="viewCertIssuer">مصلحة الأحوال المدنية والحكومة الرقمية</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-slate-400">كود الوثيقة المعتمد:</span>
-                            <span class="font-mono text-cyan-300 font-bold" id="viewCertCode">CIVIL-ID-29509180</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-slate-400">تاريخ انتهاء الصلاحية:</span>
-                            <span class="font-mono text-emerald-300 font-bold" id="viewCertExp">2030-01-14</span>
-                        </div>
-                    </div>
-
-                    <div class="p-4 rounded-xl bg-slate-900/60 border border-white/5">
-                        <span class="text-slate-400 block mb-1">تفاصيل الاعتماد والبيانات:</span>
-                        <p class="text-slate-200 leading-relaxed" id="viewCertDesc">
-                            وثيقة إثبات الشخصية الرقمية الرسمية المشفرة والمطابقة لمعايير الهوية الوطنية والأمان البيومتري.
-                        </p>
-                    </div>
-
-                    <!-- Signatures & Verification Hash -->
-                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-cyan-500/20 text-xs text-slate-400">
-                        <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-emerald-400 text-lg">enhanced_encryption</span>
-                            <span class="font-mono">SHA-256 Cryptographically Secured</span>
-                        </div>
-                        <span class="text-[11px] text-cyan-300 font-mono">UID: IDC-BLOCKCHAIN-9942</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bottom Actions -->
-            <div class="mt-5 flex items-center justify-between gap-3">
-                <button onclick="closeModal('certViewerModal')" class="py-2.5 px-4 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold hover:bg-slate-700 transition-all">إغلاق</button>
-                <button id="viewCertRelockBtn" onclick="relockActiveCertificate()" class="py-2.5 px-4 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1.5 transition-all">
-                    <span class="material-symbols-outlined text-sm">lock</span>
-                    <span>إعادة قفل هذه الوثيقة فوراً</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 7: OFFLINE USER DATA EDITOR ("والداتا الي اليوزر يحطها") -->
-    <div id="offlineDataEditorModal" class="modal-backdrop fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
-        <div class="glass-panel rounded-3xl p-6 sm:p-8 max-w-xl w-full relative border border-orange-500/40 shadow-2xl max-h-[92vh] overflow-y-auto">
-            <button onclick="closeModal('offlineDataEditorModal')" class="absolute top-4 left-4 text-slate-400 hover:text-white p-1 rounded-full">
-                <span class="material-symbols-outlined text-xl">close</span>
-            </button>
-
-            <div class="flex items-center gap-3 mb-5">
-                <div class="w-12 h-12 rounded-2xl orange-gradient flex items-center justify-center text-white shrink-0 shadow-lg shadow-orange-500/20">
-                    <span class="material-symbols-outlined text-2xl font-bold">tune</span>
-                </div>
-                <div>
-                    <h3 class="text-lg font-black text-white">تعديل بيانات الطوارئ والأوفلاين</h3>
-                    <p class="text-xs text-orange-200">الداتا التي يدخلها المستخدم وتُحفظ محليًا للعمل بدون إنترنت</p>
-                </div>
-            </div>
-
-            <form onsubmit="saveOfflineDataFromEditor(event)" class="space-y-4 text-xs">
-                <!-- Name & Title -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-slate-300 block mb-1 font-semibold">الاسم بالكامل:</label>
-                        <input type="text" id="editFullName" required class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-orange-500">
-                    </div>
-                    <div>
-                        <label class="text-slate-300 block mb-1 font-semibold">المسمى المهني / التخصص:</label>
-                        <input type="text" id="editJobTitle" required class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-orange-500">
-                    </div>
-                </div>
-
-                <!-- National ID & Blood Type -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-slate-300 block mb-1 font-semibold">الرقم القومي المصري:</label>
-                        <input type="text" id="editNationalId" required class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-white/10 text-white font-mono focus:outline-none focus:border-orange-500">
-                    </div>
-                    <div>
-                        <label class="text-slate-300 block mb-1 font-semibold">فصيلة الدم:</label>
-                        <select id="editBloodType" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-orange-500">
-                            <option value="O+">O+</option>
-                            <option value="O-">O-</option>
-                            <option value="A+">A+</option>
-                            <option value="A-">A-</option>
-                            <option value="B+">B+</option>
-                            <option value="B-">B-</option>
-                            <option value="AB+">AB+</option>
-                            <option value="AB-">AB-</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Allergies & Chronic -->
-                <div>
-                    <label class="text-slate-300 block mb-1 font-semibold">التنبيهات والتحسس الحرج (Allergies):</label>
-                    <input type="text" id="editAllergies" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-orange-500">
-                </div>
-
-                <div>
-                    <label class="text-slate-300 block mb-1 font-semibold">الأمراض المزمنة والأدوية المستمرة:</label>
-                    <input type="text" id="editChronic" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-orange-500">
-                </div>
-
-                <!-- Emergency Contacts -->
-                <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/5 space-y-3">
-                    <span class="text-orange-300 font-bold block">أرقام هواتف الطوارئ المباشرة:</span>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-slate-400 block mb-1">اسم جهة الطوارئ 1:</label>
-                            <input type="text" id="editC1Name" class="w-full py-2 px-3 rounded-lg bg-slate-950 border border-white/10 text-white focus:outline-none focus:border-orange-500">
-                        </div>
-                        <div>
-                            <label class="text-slate-400 block mb-1">رقم الهاتف 1:</label>
-                            <input type="tel" id="editC1Phone" class="w-full py-2 px-3 rounded-lg bg-slate-950 border border-white/10 text-white font-mono focus:outline-none focus:border-orange-500">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-slate-400 block mb-1">اسم جهة الطوارئ 2:</label>
-                            <input type="text" id="editC2Name" class="w-full py-2 px-3 rounded-lg bg-slate-950 border border-white/10 text-white focus:outline-none focus:border-orange-500">
-                        </div>
-                        <div>
-                            <label class="text-slate-400 block mb-1">رقم الهاتف 2:</label>
-                            <input type="tel" id="editC2Phone" class="w-full py-2 px-3 rounded-lg bg-slate-950 border border-white/10 text-white font-mono focus:outline-none focus:border-orange-500">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Emergency Directives Notes -->
-                <div>
-                    <label class="text-slate-300 block mb-1 font-semibold">ملاحظات ووصية الطوارئ للإسعاف:</label>
-                    <textarea id="editNotes" rows="2" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-orange-500"></textarea>
-                </div>
-
-                <!-- Offline PIN -->
-                <div>
-                    <label class="text-slate-300 block mb-1 font-semibold">رمز PIN لحماية وضع عدم الاتصال:</label>
-                    <input type="text" id="editOfflinePin" maxlength="6" class="w-full py-2.5 px-3 rounded-xl bg-slate-900 border border-white/10 text-white font-mono focus:outline-none focus:border-orange-500">
-                </div>
-
-                <!-- Actions -->
-                <div class="grid grid-cols-2 gap-3 pt-3">
-                    <button type="button" onclick="closeModal('offlineDataEditorModal')" class="py-2.5 px-4 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold hover:bg-slate-700 transition-all">إلغاء</button>
-                    <button type="submit" class="py-2.5 px-4 rounded-xl orange-gradient text-white text-xs font-extrabold shadow-lg shadow-orange-500/25 hover:brightness-110 transition-all">حفظ البيانات في الذاكرة المحلية</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL 8: NFC TAP SIMULATION ANIMATION -->
-    <div id="nfcTapModal" class="modal-backdrop fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
-        <div class="glass-panel rounded-3xl p-8 max-w-sm w-full flex flex-col items-center justify-center text-center relative border border-cyan-400/40 shadow-2xl">
-            <!-- NFC Waves Animation -->
-            <div class="relative w-28 h-28 flex items-center justify-center my-4">
-                <div class="absolute inset-0 rounded-full border-2 border-cyan-400/30 animate-ping"></div>
-                <div class="absolute inset-2 rounded-full border-2 border-teal-400/40 animate-pulse"></div>
-                <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-cyan-600 to-teal-400 flex items-center justify-center text-slate-950 font-bold shadow-xl shadow-cyan-500/40 z-10">
-                    <span class="material-symbols-outlined text-4xl">contactless</span>
-                </div>
-            </div>
-
-            <h3 class="text-lg font-black text-white mt-2">محاكاة لمس شريحة IDC</h3>
-            <p class="text-xs text-cyan-300 mt-1">جاري قراءة الشريحة الرقمية المشفرة...</p>
-            <p class="text-[11px] text-slate-400 mt-3 font-mono">UID: IDC-RFID-9942-X1</p>
-        </div>
-    </div>
-
-    <!-- GLOBAL TOAST NOTIFICATION -->
-    <div id="globalToast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl bg-slate-900/95 border border-cyan-500/40 text-cyan-200 text-xs sm:text-sm font-bold shadow-2xl flex items-center gap-2.5 pointer-events-none opacity-0 translate-y-10 transition-all duration-300">
-        <span class="material-symbols-outlined text-cyan-400 text-lg">check_circle</span>
-        <span id="toastMessage">تم تنفيذ الإجراء بنجاح</span>
-    </div>
-
-    <!-- Application Logic Script -->
-    <script src="./app.js"></script>
+<body>
+<div id="app"></div>
+<script type="module" src="js/app.js"></script>
 </body>
 </html>
