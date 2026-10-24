@@ -3,11 +3,90 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>IDC</title>
+<meta name="theme-color" content="#202124">
+<title>IDC - كارت الهوية الرقمية والوثائق العامة</title>
 <link rel="icon" href="icons/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link rel="stylesheet" href="css/app.css">
+<style>
+/* Embedded IDC Master Design System */
+:root {
+  --bg: #202124;
+  --sf: #292a2d;
+  --cd: #2d3135;
+  --ln: #3c4043;
+  --tx: #e8eaed;
+  --mu: #9aa0a6;
+  --bl: #8ab4f8;
+  --rd: #f28b82;
+  --yl: #fdd663;
+  --gn: #81c995;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  margin: 0;
+  font: 400 14px/1.6 'Cairo', Arial, sans-serif;
+  color: var(--tx);
+  background:
+    radial-gradient(600px 400px at 50% -10%, rgba(138, 180, 248, 0.12), transparent),
+    var(--bg);
+  background-attachment: fixed;
+  min-height: 100vh;
+  padding: 20px 16px 40px;
+}
+#app {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.mi { font-family: "Material Icons"; font-style: normal; font-size: 20px; line-height: 1; vertical-align: middle; }
+.c { text-align: center; }
+.mu { color: var(--mu); }
+.sm { font-size: 12px; }
+.wm {
+  font-size: 32px;
+  font-weight: 900;
+  text-align: center;
+  direction: ltr;
+  background: linear-gradient(135deg, #8ab4f8, #81c995);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+.ac {
+  background: var(--sf);
+  border: 1px solid var(--ln);
+  border-radius: 24px;
+  padding: 28px 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+.rw {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-top: 1px solid var(--ln);
+}
+.rw:first-child { border-top: 0; }
+.g { flex: 1; min-width: 0; }
+.tag {
+  display: inline-block;
+  border: 1px solid var(--ln);
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  color: var(--mu);
+}
+.tag.ok { color: var(--gn); border-color: rgba(129, 201, 149, 0.3); background: rgba(129, 201, 149, 0.08); }
+.tag.wn { color: var(--yl); border-color: rgba(253, 214, 99, 0.3); background: rgba(253, 214, 99, 0.08); }
+.bt.t { background: none; border: 0; color: var(--bl); cursor: pointer; font: 600 13px 'Cairo', sans-serif; padding: 6px 12px; }
+</style>
 </head>
 <body>
 <div id="app" style="padding-bottom:30px"></div>
@@ -22,7 +101,7 @@ const h = new URLSearchParams(location.search).get('h') || '';
 const { data } = await sb.rpc('get_public_profile', { h });
 const draw = () => {
   apply();
-  const lb = `<div class="c"><button class="bt t" id="lg">${lang() === 'ar' ? 'English' : 'العربية'}</button></div>`;
+  const lb = `<div class="c" style="margin-bottom:12px"><button class="bt t" id="lg">${lang() === 'ar' ? 'English' : 'العربية'}</button></div>`;
   if (!data) { app.innerHTML = `${lb}<div class="ac c"><div class="wm">IDC</div><p class="mu">${t('pub_none')}</p></div>`; }
   else app.innerHTML = `${lb}<div class="ac"><div class="wm">IDC</div><div class="c" style="margin:14px 0"><h2>${esc(data.full_name)}</h2><div class="mu">${t('role_' + data.role)}${data.governorate ? ' · ' + esc(data.governorate) : ''}</div></div>${(data.items || []).map(i => `<div class="rw"><div class="g"><b>${esc(i.title)}</b><div class="mu sm" dir="auto">${esc(i.value || '')}</div></div>${i.issuer ? `<span class="tag ${i.verified ? 'ok' : 'wn'}" style="margin:0">${i.verified ? '✓' : '!'} ${esc(i.issuer)}</span>` : ''}</div>`).join('') || `<p class="mu c">${t('empty')}</p>`}</div>`;
   document.getElementById('lg').onclick = () => { setLang(lang() === 'ar' ? 'en' : 'ar'); draw(); };
